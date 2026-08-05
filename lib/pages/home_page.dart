@@ -7,11 +7,13 @@ import '../connections/grpc_client.dart';
 import '../widgets/checkmark_list.dart';
 import '../widgets/general/block_container.dart';
 import '../widgets/general/footer.dart';
+import '../widgets/home_page/FeatureCard/feature_card.dart';
 import '../widgets/home_page/discipline_cards.dart';
 import '../widgets/home_page/faq.dart';
 import 'package:grpc/grpc.dart';
 import '../proto/agenda.pbgrpc.dart';
-import '../widgets/widget_holder.dart';
+import '../widgets/review_section.dart';
+import '../widgets/support_features.dart';
 import '../widgets/home_page/cluster_decoration.dart';
 
 class HomePage extends StatelessWidget {
@@ -109,38 +111,64 @@ class HomePage extends StatelessWidget {
                       backgroundColor: Colors.grey,
                       child: DisciplineShowcaseSection(),
                     ),
-                    BlockContainer(
-                      child: FAQSection(
-                        title: "Veelgestelde vragen",
-                        items: const [
-                          FAQItem(
-                            question:
-                            "Al meer dan 35 jaar ontwikkelt TSE met Odontium praktijksoftware?",
-                            answer:
-                            "Ja. TSE ontwikkelt al meer dan 35 jaar praktijksoftware voor tandartspraktijken en ondersteunt honderden praktijken.",
-                          ),
-                          FAQItem(
-                            question: "Kan ik overstappen vanuit een ander systeem?",
-                            answer:
-                            "Ja. Wij begeleiden de volledige migratie van uw huidige software naar Odontium.",
-                          ),
-                          FAQItem(
-                            question: "Bieden jullie ondersteuning?",
-                            answer:
-                            "Onze supportafdeling staat iedere werkdag klaar om u te helpen.",
-                          ),
+                    BlockContainer(child: TestimonialSection(
+                      data: TestimonialData(
+                        photoAsset: 'assets/images/testimonial_joep.jpg',
+                        authorName: 'Joep van Engelen',
+                        authorRole: 'TPP van Engelen',
+                        quote: const [
+                          TextSpan(text: 'Het programma kan veel meer dan je in eerste instantie denkt. '),
+                          TextSpan(text: 'We hebben al heel veel '),
+                          TextSpan(text: "'Aha!' momenten", style: TextStyle(fontWeight: FontWeight.bold)),
+                          TextSpan(text: ' gehad. Met '),
+                          TextSpan(text: 'feedback', style: TextStyle(fontWeight: FontWeight.bold)),
+                          TextSpan(text: ' en '),
+                          TextSpan(text: 'adviezen', style: TextStyle(fontWeight: FontWeight.bold)),
+                          TextSpan(text: ' doen ze ook daadwerkelijk iets; je ziet deze terug in de '),
+                          TextSpan(text: 'updates', style: TextStyle(fontWeight: FontWeight.bold)),
+                          TextSpan(text: '.'),
                         ],
                       ),
-                    )
+                      onCtaPressed: () {},
+                    )),
+
+
                   ],
                 ),
 
 
-                ClusterDecoration(verticalOffset: -200,),
-                ClusterDecoration(side: ClusterSide.left, verticalOffset: 420,)
+                ClusterDecoration(verticalOffset: -150,),
+                ClusterDecoration(side: ClusterSide.left, verticalOffset: 550,)
               ],
             ),
-
+            BlockContainer(
+                screenWidthFactor: 1,
+                hasHorizontalPadding: false,
+                child: OverstapSection()
+            ),
+            BlockContainer(
+              child: FAQSection(
+                title: "Veelgestelde vragen",
+                items: const [
+                  FAQItem(
+                    question:
+                    "Al meer dan 35 jaar ontwikkelt TSE met Odontium praktijksoftware?",
+                    answer:
+                    "Ja. TSE ontwikkelt al meer dan 35 jaar praktijksoftware voor tandartspraktijken en ondersteunt honderden praktijken.",
+                  ),
+                  FAQItem(
+                    question: "Kan ik overstappen vanuit een ander systeem?",
+                    answer:
+                    "Ja. Wij begeleiden de volledige migratie van uw huidige software naar Odontium.",
+                  ),
+                  FAQItem(
+                    question: "Bieden jullie ondersteuning?",
+                    answer:
+                    "Onze supportafdeling staat iedere werkdag klaar om u te helpen.",
+                  ),
+                ],
+              ),
+            ),
             // Row(
             //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             //   crossAxisAlignment: CrossAxisAlignment.start,

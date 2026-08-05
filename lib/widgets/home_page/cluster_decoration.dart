@@ -29,9 +29,9 @@ class ClusterDecoration extends StatelessWidget {
   });
 
   static const _pieces = [
-    _ClusterPiece(asset: "lib/assets/rect_licht.png", topFraction: 0.35, overhang: 0.4),
-    _ClusterPiece(asset: "lib/assets/rect_groen.png", topFraction: 0.4, overhang: 0.1),
-    _ClusterPiece(asset: "lib/assets/rect_donker.png", topFraction: 0.45, overhang: 0.6),
+    _ClusterPiece(asset: "lib/assets/rect_licht.png", topFraction: 0.40, overhang: 0.4),
+    _ClusterPiece(asset: "lib/assets/rect_groen.png", topFraction: 0.45, overhang: 0.1),
+    _ClusterPiece(asset: "lib/assets/rect_donker.png", topFraction: 0.50, overhang: 0.6),
   ];
 
   @override

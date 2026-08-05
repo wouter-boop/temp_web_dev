@@ -1,128 +1,123 @@
 import 'package:flutter/material.dart';
-
-class FeatureCard extends StatefulWidget {
-  const FeatureCard({
-    super.key,
-    required this.title,
-    required this.description,
-    required this.icon,
-    this.onTap,
-    this.color = const Color(0xFFF6F7F9),
-  });
-
+const _headingNavy = Color(0xFF16324A);
+class FeatureCardData {
   final String title;
   final String description;
-  final IconData icon;
-  final VoidCallback? onTap;
-  final Color color;
 
-  @override
-  State<FeatureCard> createState() => _FeatureCardState();
+  const FeatureCardData({required this.title, required this.description});
 }
 
-class _FeatureCardState extends State<FeatureCard> {
-  bool hovering = false;
+class FeatureHighlightsSection extends StatelessWidget {
+  final VoidCallback? onDiscoverPressed;
+
+  const FeatureHighlightsSection({super.key, this.onDiscoverPressed});
+
+  static const _cards = [
+    FeatureCardData(
+      title: 'Minder administratie,\nmeer overzicht',
+      description: 'Administratieve taken kosten vaak onnodig veel tijd. Met Odontium worden '
+          'afspraken, patiëntgegevens, declaraties en documenten centraal beheerd, '
+          'waardoor u minder hoeft te zoeken en meer overzicht houdt over uw praktijk.',
+    ),
+    FeatureCardData(
+      title: 'Alles op één\ncentrale plek',
+      description: 'U hoeft niet langer te schakelen tussen verschillende programma\'s. Agenda, '
+          'patiëntendossiers, communicatie, facturatie en belangrijke documenten zijn '
+          'allemaal geïntegreerd in één gebruiksvriendelijk systeem.',
+    ),
+    FeatureCardData(
+      title: 'Persoonlijke\nondersteuning',
+      description: 'Bij vragen of problemen staat u er nooit alleen voor. U krijgt direct '
+          'contact met een betrokken supportteam dat Odontium door en door kent en u '
+          'snel verder helpt – zonder ingewikkelde ticketsystemen.',
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final primary = Theme.of(context).colorScheme.primary;
-
-    return MouseRegion(
-      onEnter: (_) => setState(() => hovering = true),
-      onExit: (_) => setState(() => hovering = false),
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOutCubic,
-          transform: Matrix4.translationValues(0, hovering ? -8 : 0, 0),
-          height: 270,
-          padding: const EdgeInsets.all(28),
-          decoration: BoxDecoration(
-            color: widget.color,
-            borderRadius: BorderRadius.circular(28),
-            border: Border.all(
-              color: hovering ? primary : Colors.black12,
-              width: 1.5,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 48),
+      decoration: BoxDecoration(
+        color: Color.fromRGBO(224,237,244,1),
+        borderRadius: BorderRadius.circular(28),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          RichText(
+            textAlign: TextAlign.center,
+            text: const TextSpan(
+              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: _headingNavy, height: 1.3),
+              children: [
+                TextSpan(text: 'Wat ', style: TextStyle(fontFamily: 'Segoe UI')),
+                TextSpan(text: 'Odontium', style: TextStyle(color: Color.fromRGBO(32,156,160,1), fontWeight: FontWeight.w900, fontFamily: 'Segoe UI')),
+                TextSpan(text: ' voor\nuw praktijk betekent.', style: TextStyle(fontFamily: 'Segoe UI')),
+              ],
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: hovering ? .12 : .05),
-                blurRadius: hovering ? 28 : 14,
-                offset: Offset(0, hovering ? 16 : 8),
-              ),
-            ],
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                height: 56,
-                width: 56,
-                decoration: BoxDecoration(
-                  color: hovering
-                      ? primary.withValues(alpha: .12)
-                      : Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Icon(
-                  widget.icon,
-                  color: hovering ? primary : Colors.black87,
-                ),
-              ),
-
-              const Spacer(),
-
-              AnimatedDefaultTextStyle(
-                duration: const Duration(milliseconds: 200),
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: hovering ? primary : Colors.black,
-                ),
-                child: Text(widget.title),
-              ),
-
-              const SizedBox(height: 14),
-
-              Text(
-                widget.description,
-                maxLines: 4,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 18,
-                  height: 1.55,
-                  color: Colors.grey.shade700,
-                ),
-              ),
-
-              const Spacer(),
-
-              Row(
-                children: [
-                  Text(
-                    "Meer informatie",
-                    style: TextStyle(
-                      color: primary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-
-                  const SizedBox(width: 8),
-
-                  AnimatedSlide(
-                    duration: const Duration(milliseconds: 200),
-                    offset: hovering ? const Offset(.25, 0) : Offset.zero,
-                    child: Icon(Icons.arrow_forward_rounded, color: primary),
-                  ),
-                ],
-              ),
-            ],
+          const SizedBox(height: 32),
+          Wrap(
+            spacing: 24,
+            runSpacing: 24,
+            alignment: WrapAlignment.center,
+            children: [for (final data in _cards) FeatureCard(data: data)],
           ),
-        ),
+          const SizedBox(height: 32),
+          OutlinedButton(
+            onPressed: onDiscoverPressed,
+            style: OutlinedButton.styleFrom(
+              foregroundColor: _headingNavy,
+              side: const BorderSide(color: _headingNavy),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Ontdek Odontium', style: TextStyle(fontWeight: FontWeight.w600)),
+                SizedBox(width: 8),
+                Icon(Icons.arrow_forward, size: 16),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 }
+
+class FeatureCard extends StatelessWidget {
+  final FeatureCardData data;
+
+  const FeatureCard({super.key, required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 260,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 12, offset: const Offset(0, 4))],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            data.title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _headingNavy, height: 1.3),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            data.description,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 13, color: Colors.red, height: 1.5),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
