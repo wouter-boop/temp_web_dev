@@ -6,6 +6,7 @@ class BlockContainer extends StatelessWidget {
     required this.child,
     this.height,
     this.backgroundColor = const Color(0xFFF8F9FB),
+    this.gradient,
     this.padding = const EdgeInsets.symmetric(horizontal: 48, vertical: 72),
     this.margin = EdgeInsets.zero,
     this.maxContentWidth = 1400,
@@ -19,6 +20,7 @@ class BlockContainer extends StatelessWidget {
   final double? height;
 
   final Color backgroundColor;
+  final Gradient? gradient;
   final EdgeInsetsGeometry padding;
   final EdgeInsetsGeometry margin;
   final double maxContentWidth;
@@ -34,7 +36,10 @@ class BlockContainer extends StatelessWidget {
       width: double.infinity,
       height: height,
       margin: margin,
-      color: backgroundColor,
+      decoration: BoxDecoration(
+        color: gradient == null ? backgroundColor : null,
+        gradient: gradient,
+      ),
       alignment: alignment,
       child: Padding(
         padding: hasHorizontalPadding

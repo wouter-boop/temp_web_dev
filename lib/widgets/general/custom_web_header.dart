@@ -25,33 +25,19 @@ class CustomWebHeader extends StatelessWidget {
       label: 'Product',
       subItems: [
         'Ontdek Odontium',
-        'Features',
-        'Smart Features',
-        'Security',
-        'Integrations',
+        'Slimme Functies',
+        'Beveiliging',
+        'Integraties',
         'Mobiele apps'
       ]
     ),
     NavItemData(
       label: 'Disciplines',
-      subItems: [
-        'Tandarts',
-        'Tandtechniek',
-        'Tandprotheticus',
-        'Mondhygiënist',
-        'Orthodontist',
-      ],
     ),
     NavItemData(
         label: 'Overstappen',
-      subItems: [
-        'Stap voor stap',
-        'Training',
-        'Klantverhalen',
-        'FAQ Overstappen'
-      ]
     ),
-    NavItemData(label: 'Over Ons', subItems: ['TSE', 'Onze support', 'Team']),
+    NavItemData(label: 'Over Ons', subItems: ['TSE', 'Onze support', 'Klant verhalen']),
     NavItemData(label: 'Contact'),
     NavItemData(label: 'Boek een demo'),
     NavItemData(label: 'Support'),

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 class ArrowButton extends StatefulWidget {
-  const ArrowButton({super.key, required this.text, required this.function});
+  const ArrowButton({super.key, required this.text, required this.function, this.white = false});
 
   final String text;
   final Function function;
+  final bool white;
 
   @override
   State<ArrowButton> createState() => _ArrowButtonState();
@@ -16,9 +17,9 @@ class _ArrowButtonState extends State<ArrowButton> {
     return OutlinedButton(
       onPressed: () => {widget.function()},
       style: OutlinedButton.styleFrom(
-        foregroundColor: const Color(0xFF0F382C),
+        foregroundColor: widget.white ? Colors.white : const Color(0xFF0F382C),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-        side: const BorderSide(color: Color(0xFF0F382C), width: 1.5),
+        side: BorderSide(color:  widget.white ? Colors.white : const Color(0xFF0F382C), width: 1.5),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       ),
       child: Row(

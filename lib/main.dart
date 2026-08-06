@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:odontium_website/pages/beveiliging_page.dart';
 import 'package:odontium_website/pages/home_page.dart';
 import 'package:odontium_website/pages/not_found_page.dart';
 import 'package:odontium_website/pages/product_page.dart';
-import 'package:odontium_website/pages/settings_page.dart';
+import 'package:odontium_website/pages/slimme_functies_page.dart';
 import 'package:odontium_website/router.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -59,52 +60,59 @@ final GoRouter _router = GoRouter(
           ),
         ),
         GoRoute(
-          path: '/product/unieke-features',
+          path: '/product/slimme-functies',
           pageBuilder: (context, state) => _slowPageTransition(
             key: state.pageKey,
-            child: const ProductPage(),
+            child: const SlimmeFunctiesPage(),
+          ),
+        ),
+        GoRoute(
+          path: '/product/beveiliging',
+          pageBuilder: (context, state) => _slowPageTransition(
+            key: state.pageKey,
+            child: const BeveiligingPage(),
           ),
         ),
         GoRoute(
           path: '/disciplines',
           pageBuilder: (context, state) => _slowPageTransition(
             key: state.pageKey,
-            child: const SettingsPage(),
+            child: const ProductPage(),
           ),
         ),
         GoRoute(
           path: '/overstappen',
           pageBuilder: (context, state) => _slowPageTransition(
             key: state.pageKey,
-            child: const SettingsPage(),
+            child: const ProductPage(),
           ),
         ),
         GoRoute(
           path: '/over_ons',
           pageBuilder: (context, state) => _slowPageTransition(
             key: state.pageKey,
-            child: const SettingsPage(),
+            child: const ProductPage(),
           ),
         ),
         GoRoute(
           path: '/contact',
           pageBuilder: (context, state) => _slowPageTransition(
             key: state.pageKey,
-            child: const SettingsPage(),
+            child: const ProductPage(),
           ),
         ),
         GoRoute(
           path: '/demo',
           pageBuilder: (context, state) => _slowPageTransition(
             key: state.pageKey,
-            child: const SettingsPage(),
+            child: const ProductPage(),
           ),
         ),
         GoRoute(
           path: '/support',
           pageBuilder: (context, state) => _slowPageTransition(
             key: state.pageKey,
-            child: const SettingsPage(),
+            child: const ProductPage(),
           ),
         ),
       ],
@@ -140,8 +148,6 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: "Segoe UI",
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.cyan),
-        //useMaterial3: true,
-        textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Segoe UI'),
       ),
       routerConfig: _router,
     );

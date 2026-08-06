@@ -6,12 +6,15 @@ class FeatureList extends StatelessWidget {
 
   static const Color darkTeal = Color(0xFF0F3B3F);
   static const Color subtextColor = Color(0xFF616161);
-  static const Color imagePlaceholderColor = Color(0xFFDCDCDC);
 
   @override
   Widget build(BuildContext context) {
     return BlockContainer(
-      backgroundColor: const Color(0xFFF2F2F2),
+      gradient: const LinearGradient(
+        colors: [Color.fromRGBO(77, 132, 152, 1), Colors.white],
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+      ),
       child: LayoutBuilder(
         builder: (context, constraints) {
           final isMobile = constraints.maxWidth < 768;
@@ -25,14 +28,15 @@ class FeatureList extends StatelessWidget {
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 900),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      "Werk met al uw bestanden,\nzonder Odontium te verlaten",
+                      "Slimme functies",
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: isMobile ? 26 : 34,
                         fontWeight: FontWeight.bold,
-                        color: darkTeal,
+                        color: Colors.white,
                         height: 1.2,
                       ),
                     ),
@@ -41,19 +45,21 @@ class FeatureList extends StatelessWidget {
                       constraints: const BoxConstraints(maxWidth: 600),
                       child: Text(
                         "Plan afspraken eenvoudig, beheer meerdere behandelkamers en houd altijd overzicht over uw agenda — ook op drukke dagen met meerdere behandelaars.",
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: isMobile ? 13 : 14,
                           height: 1.4,
-                          color: subtextColor,
+                          color: Colors.white70,
                         ),
                       ),
                     ),
-                    SizedBox(height: isMobile ? 32 : 48),
+                    SizedBox(height: isMobile ? 32 : 56),
                     _buildFeatureItem(
                       isMobile: isMobile,
+                      icon: Icons.gavel,
                       title: "CCBR Controle",
                       description:
-                      "Met één klik controleert u of een patiënt onder curatele of bewind staat. Odontium haalt de gegevens automatisch op en koppelt de curator direct aan het dossier.",
+                          "Met één klik controleert u of een patiënt onder curatele of bewind staat. Odontium haalt de gegevens automatisch op en koppelt de curator direct aan het dossier.",
                       bulletPoints: const [
                         "Voorkomt fouten",
                         "Bespaart tijd",
@@ -63,9 +69,10 @@ class FeatureList extends StatelessWidget {
                     SizedBox(height: isMobile ? 32 : 48),
                     _buildFeatureItem(
                       isMobile: isMobile,
+                      icon: Icons.calendar_month_outlined,
                       title: "Webagenda",
                       description:
-                      "Patiënten vragen zelf een afspraak aan via uw website. U keurt de aanvraag goed of af, en de patiënt ontvangt automatisch een bevestiging.",
+                          "Patiënten vragen zelf een afspraak aan via uw website. U keurt de aanvraag goed of af, en de patiënt ontvangt automatisch een bevestiging.",
                       bulletPoints: const [
                         "Minder telefoontjes",
                         "Betere planning",
@@ -75,9 +82,10 @@ class FeatureList extends StatelessWidget {
                     SizedBox(height: isMobile ? 32 : 48),
                     _buildFeatureItem(
                       isMobile: isMobile,
+                      icon: Icons.qr_code_scanner,
                       title: "Batchcodes scannen",
                       description:
-                      "Scan QR- of streepjescodes met een handscanner. Referentienummer, chargenummer en productinformatie worden automatisch ingevuld.",
+                          "Scan QR- of streepjescodes met een handscanner. Referentienummer, chargenummer en productinformatie worden automatisch ingevuld.",
                       bulletPoints: const [
                         "Geen typwerk",
                         "Minder fouten",
@@ -87,9 +95,10 @@ class FeatureList extends StatelessWidget {
                     SizedBox(height: isMobile ? 32 : 48),
                     _buildFeatureItem(
                       isMobile: isMobile,
+                      icon: Icons.draw_outlined,
                       title: "Rechtsgeldige handtekeningen",
                       description:
-                      "Onderteken documenten digitaal met eIDAS-conforme handtekeningen. Rechtsgeldig, veilig en direct verwerkt in het patiëntdossier.",
+                          "Onderteken documenten digitaal met eIDAS-conforme handtekeningen. Rechtsgeldig, veilig en direct verwerkt in het patiëntdossier.",
                       bulletPoints: const [
                         "Juridische zekerheid",
                         "Snellere goedkeuring",
@@ -108,23 +117,24 @@ class FeatureList extends StatelessWidget {
 
   Widget _buildFeatureItem({
     required bool isMobile,
+    required IconData icon,
     required String title,
     required String description,
     required List<String> bulletPoints,
   }) {
     final imageWidget = Container(
-      width: isMobile ? double.infinity : 200,
-      height: isMobile ? 180 : 180,
+      width: isMobile ? double.infinity : 140,
+      height: 140,
       decoration: BoxDecoration(
-        color: imagePlaceholderColor,
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: const Center(
-        child: Icon(
-          Icons.image,
-          size: 40,
-          color: Colors.black26,
+        gradient: const LinearGradient(
+          colors: [Color(0xFF17A8A6), Color(0xFF0F3B3F)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Center(
+        child: Icon(icon, size: 48, color: Colors.white),
       ),
     );
 
@@ -150,7 +160,7 @@ class FeatureList extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         ...bulletPoints.map(
-              (point) => Padding(
+          (point) => Padding(
             padding: const EdgeInsets.only(bottom: 6.0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,

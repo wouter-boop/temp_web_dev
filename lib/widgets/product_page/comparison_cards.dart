@@ -7,9 +7,8 @@ class ComparisonCards extends StatelessWidget {
   const ComparisonCards({super.key});
 
   static const Color darkTeal = Color(0xFF0F3B3F);
-  static const Color cardBg = Color(0xFFDCDCDC);
-  static const Color buttonBg = Color(0xFF9E9E9E);
-  static const Color iconBg = Color(0xFF8D8D8D);
+  static const Color teal = Color(0xFF17A8A6);
+  static const Color cardBg = Color.fromRGBO(226, 238, 245, 1);
   static const Color subtextColor = Color(0xFF616161);
 
   @override
@@ -26,7 +25,7 @@ class ComparisonCards extends StatelessWidget {
               horizontal: isMobile ? 16.0 : 24.0,
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   "Werk lokaal of in de cloud",
@@ -197,6 +196,7 @@ class ComparisonCards extends StatelessWidget {
       buttonText: "Kies voor cloud",
       statValue: "99,9%",
       statLabel: "Gemiddelde uptime",
+      filled: true,
       onTap: () {},
     );
   }
@@ -217,6 +217,7 @@ class ComparisonCards extends StatelessWidget {
       buttonText: "Kies voor lokaal",
       statValue: "100%",
       statLabel: "controle over uw eigen omgeving",
+      filled: false,
       onTap: () {},
     );
   }
@@ -229,13 +230,14 @@ class ComparisonCards extends StatelessWidget {
     required String buttonText,
     required String statValue,
     required String statLabel,
+    required bool filled,
     required VoidCallback onTap,
   }) {
     return Container(
       padding: const EdgeInsets.all(32.0),
       decoration: BoxDecoration(
         color: cardBg,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -243,7 +245,7 @@ class ComparisonCards extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: iconBg,
+              color: teal,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
@@ -277,10 +279,14 @@ class ComparisonCards extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(
-                    Icons.check,
-                    size: 18,
-                    color: Colors.black87,
+                  Container(
+                    width: 10,
+                    height: 10,
+                    margin: const EdgeInsets.only(top: 4),
+                    decoration: BoxDecoration(
+                      color: teal,
+                      borderRadius: BorderRadius.circular(3),
+                    ),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
@@ -301,24 +307,39 @@ class ComparisonCards extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             height: 44,
-            child: ElevatedButton(
-              onPressed: onTap,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: buttonBg,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: Text(
-                buttonText,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-              ),
-            ),
+            child: filled
+                ? ElevatedButton(
+                    onPressed: onTap,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: darkTeal,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      buttonText,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  )
+                : OutlinedButton(
+                    onPressed: onTap,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: darkTeal,
+                      side: const BorderSide(color: darkTeal, width: 1.5),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      buttonText,
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                    ),
+                  ),
           ),
           const SizedBox(height: 24),
           Divider(color: Colors.grey.shade400, height: 1),

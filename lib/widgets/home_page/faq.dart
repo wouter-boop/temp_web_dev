@@ -12,10 +12,18 @@ class FAQSection extends StatelessWidget {
     super.key,
     required this.items,
     this.title = "Veelgestelde vragen",
+    this.titleFontSize = 48,
+    this.useChevronIcon = false,
+    this.showTopDivider = false,
+    this.trailing,
   });
 
   final String title;
   final List<FAQItem> items;
+  final double titleFontSize;
+  final bool useChevronIcon;
+  final bool showTopDivider;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -24,23 +32,29 @@ class FAQSection extends StatelessWidget {
         Text(
           title,
           textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontSize: 48,
+          style: TextStyle(
+            fontSize: titleFontSize,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF0B4A53),
+            color: const Color(0xFF0B4A53),
           ),
         ),
         const SizedBox(height: 56),
-        ...items.map((e) => _FAQTile(item: e)),
+        if (showTopDivider) const Divider(height: 1, thickness: 1, color: Color(0xFF7FA5AF)),
+        ...items.map((e) => _FAQTile(item: e, useChevronIcon: useChevronIcon)),
+        if (trailing != null) ...[
+          const SizedBox(height: 32),
+          trailing!,
+        ],
       ],
     );
   }
 }
 
 class _FAQTile extends StatefulWidget {
-  const _FAQTile({required this.item});
+  const _FAQTile({required this.item, this.useChevronIcon = false});
 
   final FAQItem item;
+  final bool useChevronIcon;
 
   @override
   State<_FAQTile> createState() => _FAQTileState();
@@ -71,11 +85,15 @@ class _FAQTileState extends State<_FAQTile>
                 ),
                 const SizedBox(width: 24),
                 AnimatedRotation(
-                  turns: expanded ? 0.125 : 0,
+                  turns: widget.useChevronIcon
+                      ? (expanded ? 0.5 : 0)
+                      : (expanded ? 0.125 : 0),
                   duration: const Duration(milliseconds: 250),
                   child: Icon(
-                    expanded ? Icons.remove : Icons.add,
-                    size: 28,
+                    widget.useChevronIcon
+                        ? Icons.keyboard_arrow_down
+                        : (expanded ? Icons.remove : Icons.add),
+                    size: widget.useChevronIcon ? 24 : 28,
                     color: const Color(0xFF20343A),
                   ),
                 ),
