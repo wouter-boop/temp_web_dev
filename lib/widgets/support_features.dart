@@ -10,7 +10,11 @@ class OverstapStepData {
   final String title;
   final String description;
 
-  const OverstapStepData({required this.number, required this.title, required this.description});
+  const OverstapStepData({
+    required this.number,
+    required this.title,
+    required this.description,
+  });
 }
 
 /// Content for a single support-feature card in [OverstapSection].
@@ -19,7 +23,11 @@ class SupportFeatureData {
   final String title;
   final String description;
 
-  const SupportFeatureData({required this.icon, required this.title, required this.description});
+  const SupportFeatureData({
+    required this.icon,
+    required this.title,
+    required this.description,
+  });
 }
 
 /// The "Samen zorgen we voor een soepele OVERSTAP" panel: heading, a 5-step
@@ -35,31 +43,36 @@ class OverstapSection extends StatelessWidget {
     OverstapStepData(
       number: 1,
       title: 'Gratis Demo',
-      description: 'Maak vrijblijvend kennis met Odontium. We laten zien hoe de software aansluit '
+      description:
+          'Maak vrijblijvend kennis met Odontium. We laten zien hoe de software aansluit '
           'op uw praktijk en beantwoorden al uw vragen.',
     ),
     OverstapStepData(
       number: 2,
       title: 'Voorstel',
-      description: 'U ontvangt een voorstel dat past bij uw praktijk, met de keuze of cloud of '
+      description:
+          'U ontvangt een voorstel dat past bij uw praktijk, met de keuze of cloud of '
           'lokale installatie en het gewenste aantal gebruikers.',
     ),
     OverstapStepData(
       number: 3,
       title: 'Datamigratie',
-      description: 'Wij zetten uw gegevens veilig en zorgvuldig over, zodat u snel verder kunt '
+      description:
+          'Wij zetten uw gegevens veilig en zorgvuldig over, zodat u snel verder kunt '
           'werken in uw nieuwe omgeving.',
     ),
     OverstapStepData(
       number: 4,
       title: 'Inrichten',
-      description: 'Samen richten we Odontium in zoals uw praktijk werkt. Tijdens de eerste '
+      description:
+          'Samen richten we Odontium in zoals uw praktijk werkt. Tijdens de eerste '
           'periode staan wij klaar voor vragen en ondersteuning.',
     ),
     OverstapStepData(
       number: 5,
       title: 'Livegang',
-      description: 'Zodra alles klaarstaat kunt u live. Ook daarna blijft ons supportteam '
+      description:
+          'Zodra alles klaarstaat kunt u live. Ook daarna blijft ons supportteam '
           'bereikbaar om u snel verder te helpen.',
     ),
   ];
@@ -68,19 +81,22 @@ class OverstapSection extends StatelessWidget {
     SupportFeatureData(
       icon: Icons.call_outlined,
       title: 'Telephonische support',
-      description: 'Bel 053 - 477 77 86 en u krijgt direct iemand aan de lijn die u verder kan '
+      description:
+          'Bel 053 - 477 77 86 en u krijgt direct iemand aan de lijn die u verder kan '
           'helpen — geen keuzemenu, geen wachtrij.',
     ),
     SupportFeatureData(
       icon: Icons.person_outline,
       title: 'Persoonlijke begeleiding',
-      description: 'Van implementatie tot dagelijks gebruik: wij begeleiden u persoonlijk en '
+      description:
+          'Van implementatie tot dagelijks gebruik: wij begeleiden u persoonlijk en '
           'denken met u mee wanneer dat nodig is.',
     ),
     SupportFeatureData(
       icon: Icons.support_agent_outlined,
       title: 'Direct contact',
-      description: 'U hoeft geen tickets in te dienen of lang op een reactie te wachten. U krijgt '
+      description:
+          'U hoeft geen tickets in te dienen of lang op een reactie te wachten. U krijgt '
           'direct contact met ons supportteam.',
     ),
   ];
@@ -104,10 +120,18 @@ class OverstapSection extends StatelessWidget {
           RichText(
             textAlign: TextAlign.center,
             text: TextSpan(
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.blueGrey.shade900, height: 1.35),
+              style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueGrey.shade900,
+                height: 1.35,
+              ),
               children: [
                 const TextSpan(text: 'Samen zorgen we voor een\nsoepele '),
-                TextSpan(text: 'OVERSTAP', style: TextStyle(color: Colors.teal.shade600)),
+                TextSpan(
+                  text: 'OVERSTAP',
+                  style: TextStyle(color: Colors.teal.shade600),
+                ),
               ],
             ),
           ),
@@ -116,22 +140,34 @@ class OverstapSection extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: 640),
             child: Text(
               'Een nieuw softwaresysteem kiezen is een belangrijke stap. Daarom begeleiden wij u '
-                  'persoonlijk tijdens het hele traject – van de eerste demo tot de livegang en ook '
-                  'daarna. Zo kunt u met vertrouwen overstappen, zonder onnodige onderbrekingen in uw praktijk.',
+              'persoonlijk tijdens het hele traject – van de eerste demo tot de livegang en ook '
+              'daarna. Zo kunt u met vertrouwen overstappen, zonder onnodige onderbrekingen in uw praktijk.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 15, color: Colors.blueGrey.shade700, height: 1.5),
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.blueGrey.shade700,
+                height: 1.5,
+              ),
             ),
           ),
           const SizedBox(height: 48),
-          _ProcessSteps(steps: _steps),
+          Container(width: MediaQuery.of(context).size.width*0.6, child: _ProcessSteps(steps: _steps)),
           const SizedBox(height: 56),
           RichText(
             textAlign: TextAlign.center,
             text: TextSpan(
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blueGrey.shade900, height: 1.4),
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueGrey.shade900,
+                height: 1.4,
+              ),
               children: [
                 const TextSpan(text: 'Tijdens iedere stap staat ons\n'),
-                TextSpan(text: 'supportteam', style: TextStyle(color: Colors.teal.shade600)),
+                TextSpan(
+                  text: 'supportteam',
+                  style: TextStyle(color: Colors.teal.shade600),
+                ),
                 const TextSpan(text: ' voor u klaar.'),
               ],
             ),
@@ -145,12 +181,17 @@ class OverstapSection extends StatelessWidget {
               foregroundColor: Colors.blueGrey.shade900,
               side: BorderSide(color: Colors.blueGrey.shade900),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('Meer over overstappen', style: TextStyle(fontWeight: FontWeight.w600)),
+                const Text(
+                  'Meer over overstappen',
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
                 const SizedBox(width: 8),
                 const Icon(Icons.arrow_forward, size: 16),
               ],
@@ -202,7 +243,11 @@ class _ProcessSteps extends StatelessWidget {
                         Text(
                           step.title,
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.teal.shade700),
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.teal.shade700,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         Padding(
@@ -210,7 +255,11 @@ class _ProcessSteps extends StatelessWidget {
                           child: Text(
                             step.description,
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 12.5, color: Colors.blueGrey.shade600, height: 1.5),
+                            style: TextStyle(
+                              fontSize: 12.5,
+                              color: Colors.blueGrey.shade600,
+                              height: 1.5,
+                            ),
                           ),
                         ),
                       ],
@@ -241,9 +290,23 @@ class _VerticalStep extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(step.title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.teal.shade700)),
+              Text(
+                step.title,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.teal.shade700,
+                ),
+              ),
               const SizedBox(height: 6),
-              Text(step.description, style: TextStyle(fontSize: 12.5, color: Colors.blueGrey.shade600, height: 1.5)),
+              Text(
+                step.description,
+                style: TextStyle(
+                  fontSize: 12.5,
+                  color: Colors.blueGrey.shade600,
+                  height: 1.5,
+                ),
+              ),
             ],
           ),
         ),
@@ -275,7 +338,14 @@ class _StepBadge extends StatelessWidget {
         child: Center(
           child: Transform.rotate(
             angle: -math.pi / 4,
-            child: Text('$number', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+            child: Text(
+              '$number',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+              ),
+            ),
           ),
         ),
       ),
@@ -288,7 +358,10 @@ class _DottedLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(height: 2, child: CustomPaint(painter: _DottedLinePainter()));
+    return SizedBox(
+      height: 2,
+      child: CustomPaint(painter: _DottedLinePainter()),
+    );
   }
 }
 
@@ -320,7 +393,11 @@ class _VerticalDottedLine extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 16, top: 4, bottom: 4),
-      child: SizedBox(width: 2, height: 24, child: CustomPaint(painter: _VerticalDottedLinePainter())),
+      child: SizedBox(
+        width: 2,
+        height: 24,
+        child: CustomPaint(painter: _VerticalDottedLinePainter()),
+      ),
     );
   }
 }
@@ -369,7 +446,9 @@ class _SupportFeaturesGrid extends StatelessWidget {
           spacing: 24,
           runSpacing: 24,
           alignment: WrapAlignment.center,
-          children: [for (final feature in features) _SupportCard(data: feature)],
+          children: [
+            for (final feature in features) _SupportCard(data: feature),
+          ],
         );
       },
     );
@@ -398,13 +477,30 @@ class _SupportCard extends StatelessWidget {
           Container(
             width: 40,
             height: 40,
-            decoration: BoxDecoration(color: Colors.teal.shade50, borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(
+              color: Colors.teal.shade50,
+              borderRadius: BorderRadius.circular(10),
+            ),
             child: Icon(data.icon, color: Colors.teal.shade600, size: 20),
           ),
           const SizedBox(height: 16),
-          Text(data.title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.blueGrey.shade900)),
+          Text(
+            data.title,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: Colors.blueGrey.shade900,
+            ),
+          ),
           const SizedBox(height: 8),
-          Text(data.description, style: TextStyle(fontSize: 13, color: Colors.blueGrey.shade600, height: 1.5)),
+          Text(
+            data.description,
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.blueGrey.shade600,
+              height: 1.5,
+            ),
+          ),
         ],
       ),
     );

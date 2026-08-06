@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:odontium_website/pages/home_page.dart';
 import 'package:odontium_website/pages/not_found_page.dart';
-import 'package:odontium_website/pages/product_folder/unieke-features.dart';
+import 'package:odontium_website/pages/product_page.dart';
 import 'package:odontium_website/pages/settings_page.dart';
 import 'package:odontium_website/router.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
