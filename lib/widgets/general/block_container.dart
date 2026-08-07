@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'responsive.dart';
+
 class BlockContainer extends StatelessWidget {
   const BlockContainer({
     super.key,
@@ -7,7 +9,7 @@ class BlockContainer extends StatelessWidget {
     this.height,
     this.backgroundColor = const Color(0xFFF8F9FB),
     this.gradient,
-    this.padding = const EdgeInsets.symmetric(horizontal: 48, vertical: 72),
+    this.padding,
     this.margin = EdgeInsets.zero,
     this.maxContentWidth = 1400,
     this.alignment = Alignment.center,
@@ -21,8 +23,12 @@ class BlockContainer extends StatelessWidget {
 
   final Color backgroundColor;
   final Gradient? gradient;
-  final EdgeInsetsGeometry padding;
+
+  /// Falls back to a mobile-aware default (tighter horizontal/vertical
+  /// padding under [kMobileBreakpoint]) when not explicitly set.
+  final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry margin;
+
   final double maxContentWidth;
   final Alignment alignment;
   final double screenWidthFactor;
@@ -31,6 +37,10 @@ class BlockContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final effectivePadding = padding ??
+        (isMobile(context)
+            ? const EdgeInsets.symmetric(horizontal: 20, vertical: 40)
+            : const EdgeInsets.symmetric(horizontal: 48, vertical: 72));
 
     return Container(
       width: double.infinity,
@@ -43,8 +53,8 @@ class BlockContainer extends StatelessWidget {
       alignment: alignment,
       child: Padding(
         padding: hasHorizontalPadding
-            ? padding
-            : EdgeInsets.symmetric(horizontal: 0, vertical: padding.vertical),
+            ? effectivePadding
+            : EdgeInsets.symmetric(horizontal: 0, vertical: effectivePadding.vertical),
         child: ConstrainedBox(
           constraints: BoxConstraints(
             maxWidth: screenWidth * screenWidthFactor,

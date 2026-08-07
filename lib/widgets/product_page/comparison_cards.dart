@@ -15,6 +15,7 @@ class ComparisonCards extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlockContainer(
       backgroundColor: Colors.white,
+      screenWidthFactor: 1,
       child: LayoutBuilder(
         builder: (context, constraints) {
           final isMobile = constraints.maxWidth < 768;

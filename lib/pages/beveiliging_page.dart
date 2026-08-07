@@ -4,6 +4,8 @@ import 'package:odontium_website/widgets/general/footer.dart';
 import '../widgets/general/block_container.dart';
 import '../widgets/general/demo_cta_banner.dart';
 import '../widgets/general/hover_arrow_button.dart';
+import '../widgets/general/responsibility_card.dart';
+import '../widgets/general/responsive.dart';
 import '../widgets/home_page/faq.dart';
 
 const _darkTeal = Color(0xFF0F3B3F);
@@ -141,49 +143,76 @@ class _BeveiligingPageState extends State<BeveiligingPage> {
           children: [
             const SizedBox(height: 56),
             BlockContainer(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Veiligheid waarop u\nkunt vertrouwen",
-                          style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: _darkTeal, height: 1.2),
-                        ),
-                        const SizedBox(height: 16),
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 460),
-                          child: const Text(
-                            "Patiëntgegevens zijn waardevol. Daarom staat veiligheid centraal in alles wat we doen. "
-                            "Van veilige opslag en back-ups tot een zorgeloze overstap: met Odontium werkt u met "
-                            "een oplossing waarop u kunt vertrouwen.",
-                            style: TextStyle(fontSize: 14, color: _subtext, height: 1.5),
+              screenWidthFactor: 1,
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 1100),
+                  child: Builder(
+                    builder: (context) {
+                      final mobile = isMobile(context);
+                      final heroText = Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Veiligheid waarop u\nkunt vertrouwen",
+                            style: TextStyle(
+                              fontSize: mobile ? 28 : 36,
+                              fontWeight: FontWeight.bold,
+                              color: _darkTeal,
+                              height: 1.2,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: _teal,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                            elevation: 0,
+                          const SizedBox(height: 16),
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 460),
+                            child: const Text(
+                              "Patiëntgegevens zijn waardevol. Daarom staat veiligheid centraal in alles wat we doen. "
+                              "Van veilige opslag en back-ups tot een zorgeloze overstap: met Odontium werkt u met "
+                              "een oplossing waarop u kunt vertrouwen.",
+                              style: TextStyle(fontSize: 14, color: _subtext, height: 1.5),
+                            ),
                           ),
-                          child: const Text(
-                            "Plan een demo",
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: _teal,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                              elevation: 0,
+                            ),
+                            child: const Text(
+                              "Plan een demo",
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      );
+
+                      if (mobile) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            heroText,
+                            const SizedBox(height: 32),
+                            const Center(child: _SecurityIllustration()),
+                          ],
+                        );
+                      }
+
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(child: heroText),
+                          const SizedBox(width: 32),
+                          const _SecurityIllustration(),
+                        ],
+                      );
+                    },
                   ),
-                  const SizedBox(width: 32),
-                  const _SecurityIllustration(),
-                ],
+                ),
               ),
             ),
             BlockContainer(
@@ -191,9 +220,24 @@ class _BeveiligingPageState extends State<BeveiligingPage> {
               screenWidthFactor: 1,
               hasHorizontalPadding: false,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [for (final item in _bandItems) _BandItemView(item: item)],
+              child: Builder(
+                builder: (context) {
+                  if (isMobile(context)) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 20,
+                        runSpacing: 16,
+                        children: [for (final item in _bandItems) _BandItemView(item: item)],
+                      ),
+                    );
+                  }
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [for (final item in _bandItems) _BandItemView(item: item)],
+                  );
+                },
               ),
             ),
             BlockContainer(
@@ -219,24 +263,25 @@ class _BeveiligingPageState extends State<BeveiligingPage> {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 12,
+                        runSpacing: 12,
                         children: [
-                          for (var i = 0; i < _certs.length; i++) ...[
-                            if (i != 0) const SizedBox(width: 12),
+                          for (var i = 0; i < _certs.length; i++)
                             _CertPill(
                               label: _certs[i].label,
                               selected: _selectedCertIndex == i,
                               onTap: () => setState(() => _selectedCertIndex = i),
                             ),
-                          ],
                         ],
                       ),
                       const SizedBox(height: 40),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          AnimatedSwitcher(
+                      Builder(
+                        builder: (context) {
+                          final mobile = isMobile(context);
+
+                          final circle = AnimatedSwitcher(
                             duration: const Duration(milliseconds: 350),
                             transitionBuilder: (child, animation) => ScaleTransition(
                               scale: animation,
@@ -270,43 +315,60 @@ class _BeveiligingPageState extends State<BeveiligingPage> {
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 40),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  _certs[_selectedCertIndex].description,
-                                  style: const TextStyle(fontSize: 14, color: _subtext, height: 1.5),
-                                ),
-                                const SizedBox(height: 16),
-                                for (final bullet in _certs[_selectedCertIndex].bullets)
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 10),
-                                    child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        const Icon(Icons.check, size: 16, color: _teal),
-                                        const SizedBox(width: 8),
-                                        Expanded(
-                                          child: Text(bullet, style: const TextStyle(fontSize: 13, color: Colors.black87)),
-                                        ),
-                                      ],
-                                    ),
+                          );
+
+                          final details = Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _certs[_selectedCertIndex].description,
+                                style: const TextStyle(fontSize: 14, color: _subtext, height: 1.5),
+                              ),
+                              const SizedBox(height: 16),
+                              for (final bullet in _certs[_selectedCertIndex].bullets)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 10),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Icon(Icons.check, size: 16, color: _teal),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(bullet, style: const TextStyle(fontSize: 13, color: Colors.black87)),
+                                      ),
+                                    ],
                                   ),
-                                const SizedBox(height: 8),
-                                const Divider(color: Color(0xFFE0E0E0)),
-                                const SizedBox(height: 12),
-                                const Text(
-                                  "Certificaatnummer [nummer] · Uitgegeven door [certificerende instelling] · "
-                                  "Geldig tot [datum]",
-                                  style: TextStyle(fontSize: 12, color: _subtext, height: 1.4),
                                 ),
+                              const SizedBox(height: 8),
+                              const Divider(color: Color(0xFFE0E0E0)),
+                              const SizedBox(height: 12),
+                              const Text(
+                                "Certificaatnummer [nummer] · Uitgegeven door [certificerende instelling] · "
+                                "Geldig tot [datum]",
+                                style: TextStyle(fontSize: 12, color: _subtext, height: 1.4),
+                              ),
+                            ],
+                          );
+
+                          if (mobile) {
+                            return Column(
+                              children: [
+                                Center(child: circle),
+                                const SizedBox(height: 24),
+                                details,
                               ],
-                            ),
-                          ),
-                        ],
+                            );
+                          }
+
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              circle,
+                              const SizedBox(width: 40),
+                              Expanded(child: details),
+                            ],
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -315,8 +377,11 @@ class _BeveiligingPageState extends State<BeveiligingPage> {
             ),
             BlockContainer(
               screenWidthFactor: 1,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 48),
+              child: Builder(
+                builder: (context) => Container(
+                padding: isMobile(context)
+                    ? const EdgeInsets.symmetric(horizontal: 16, vertical: 32)
+                    : const EdgeInsets.symmetric(horizontal: 32, vertical: 48),
                 decoration: BoxDecoration(
                   color: const Color.fromRGBO(226, 238, 245, 1),
                   borderRadius: BorderRadius.circular(28),
@@ -339,45 +404,69 @@ class _BeveiligingPageState extends State<BeveiligingPage> {
                       ),
                     ),
                     const SizedBox(height: 40),
-                    IntrinsicHeight(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 260),
-                            child: const _ProcessCard(
-                              icon: Icons.storefront_outlined,
-                              title: "In de praktijk",
-                              description: "Uw team werkt in Odontium. Alleen bevoegde medewerkers zien een dossier.",
-                              tag: "Toegang per rol",
+                    Builder(
+                      builder: (context) {
+                        const card1 = _ProcessCard(
+                          icon: Icons.storefront_outlined,
+                          title: "In de praktijk",
+                          description: "Uw team werkt in Odontium. Alleen bevoegde medewerkers zien een dossier.",
+                          tag: "Toegang per rol",
+                        );
+                        const card2 = _ProcessCard(
+                          icon: Icons.dns_outlined,
+                          title: "In het datacentrum",
+                          description: "Opslag in een gecertificeerd datacentrum in Nederland.",
+                          tag: "AES-256",
+                        );
+                        const card3 = _ProcessCard(
+                          icon: Icons.history_outlined,
+                          title: "In de back-up",
+                          description: "Dagelijkse back-ups op een gescheiden locatie, maandelijks getest.",
+                          tag: "[30] dagen terug",
+                        );
+
+                        if (isMobile(context)) {
+                          return ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 340),
+                            child: const Column(
+                              children: [
+                                card1,
+                                _ProcessConnector(label: "TLS 1.3", vertical: true),
+                                card2,
+                                _ProcessConnector(label: "versleuteld", vertical: true),
+                                card3,
+                              ],
                             ),
+                          );
+                        }
+
+                        return IntrinsicHeight(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              ConstrainedBox(
+                                constraints: const BoxConstraints(maxWidth: 260),
+                                child: card1,
+                              ),
+                              const _ProcessConnector(label: "TLS 1.3"),
+                              ConstrainedBox(
+                                constraints: const BoxConstraints(maxWidth: 260),
+                                child: card2,
+                              ),
+                              const _ProcessConnector(label: "versleuteld"),
+                              ConstrainedBox(
+                                constraints: const BoxConstraints(maxWidth: 260),
+                                child: card3,
+                              ),
+                            ],
                           ),
-                          const _ProcessConnector(label: "TLS 1.3"),
-                          ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 260),
-                            child: const _ProcessCard(
-                              icon: Icons.dns_outlined,
-                              title: "In het datacentrum",
-                              description: "Opslag in een gecertificeerd datacentrum in Nederland.",
-                              tag: "AES-256",
-                            ),
-                          ),
-                          const _ProcessConnector(label: "versleuteld"),
-                          ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 260),
-                            child: const _ProcessCard(
-                              icon: Icons.history_outlined,
-                              title: "In de back-up",
-                              description: "Dagelijkse back-ups op een gescheiden locatie, maandelijks getest.",
-                              tag: "[30] dagen terug",
-                            ),
-                          ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
                   ],
                 ),
+              ),
               ),
             ),
             BlockContainer(
@@ -404,57 +493,72 @@ class _BeveiligingPageState extends State<BeveiligingPage> {
                         ),
                       ),
                       const SizedBox(height: 32),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Column(
+                      Builder(
+                        builder: (context) {
+                          final bulletsColumn = Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              for (final bullet in _accessBullets)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Icon(Icons.check, size: 16, color: _teal),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(bullet, style: const TextStyle(fontSize: 14, color: Colors.black87)),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                            ],
+                          );
+
+                          final noteBox = Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: const Color.fromRGBO(226, 238, 245, 1),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: const Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                for (final bullet in _accessBullets)
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 16),
-                                    child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        const Icon(Icons.check, size: 16, color: _teal),
-                                        const SizedBox(width: 8),
-                                        Expanded(
-                                          child: Text(bullet, style: const TextStyle(fontSize: 14, color: Colors.black87)),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                Text(
+                                  "En onze eigen medewerkers?",
+                                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: _darkTeal),
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  "Onze supportmedewerkers hebben geen standaard inzage in uw dossiers. Is "
+                                  "toegang nodig om u te helpen, dan vragen wij daar expliciet toestemming "
+                                  "voor en wordt die toegang gelogd.",
+                                  style: TextStyle(fontSize: 13, color: _subtext, height: 1.5),
+                                ),
                               ],
                             ),
-                          ),
-                          const SizedBox(width: 32),
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                color: const Color.fromRGBO(226, 238, 245, 1),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: const Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "En onze eigen medewerkers?",
-                                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: _darkTeal),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    "Onze supportmedewerkers hebben geen standaard inzage in uw dossiers. Is "
-                                    "toegang nodig om u te helpen, dan vragen wij daar expliciet toestemming "
-                                    "voor en wordt die toegang gelogd.",
-                                    style: TextStyle(fontSize: 13, color: _subtext, height: 1.5),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
+                          );
+
+                          if (isMobile(context)) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                bulletsColumn,
+                                const SizedBox(height: 24),
+                                noteBox,
+                              ],
+                            );
+                          }
+
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(child: bulletsColumn),
+                              const SizedBox(width: 32),
+                              Expanded(child: noteBox),
+                            ],
+                          );
+                        },
                       ),
                       const SizedBox(height: 40),
                       const Divider(color: Color(0xFFE0E0E0)),
@@ -476,29 +580,42 @@ class _BeveiligingPageState extends State<BeveiligingPage> {
                         ),
                       ),
                       const SizedBox(height: 32),
-                      IntrinsicHeight(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Expanded(
-                              child: _ResponsibilityCard(
-                                icon: Icons.apartment_outlined,
-                                title: "Wat wij regelen",
-                                bullets: _weArrangeBullets,
-                                highlighted: false,
-                              ),
+                      Builder(
+                        builder: (context) {
+                          final weCard = ResponsibilityCard(
+                            icon: Icons.apartment_outlined,
+                            title: "Wat wij regelen",
+                            bullets: _weArrangeBullets,
+                            highlighted: false,
+                          );
+                          final youCard = ResponsibilityCard(
+                            icon: Icons.person_outline,
+                            title: "Wat u regelt",
+                            bullets: _youArrangeBullets,
+                            highlighted: true,
+                          );
+
+                          if (isMobile(context)) {
+                            return Column(
+                              children: [
+                                weCard,
+                                const SizedBox(height: 24),
+                                youCard,
+                              ],
+                            );
+                          }
+
+                          return IntrinsicHeight(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Expanded(child: weCard),
+                                const SizedBox(width: 24),
+                                Expanded(child: youCard),
+                              ],
                             ),
-                            const SizedBox(width: 24),
-                            Expanded(
-                              child: _ResponsibilityCard(
-                                icon: Icons.person_outline,
-                                title: "Wat u regelt",
-                                bullets: _youArrangeBullets,
-                                highlighted: true,
-                              ),
-                            ),
-                          ],
-                        ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -732,106 +849,41 @@ class _ProcessCard extends StatelessWidget {
 
 class _ProcessConnector extends StatelessWidget {
   final String label;
+  final bool vertical;
 
-  const _ProcessConnector({required this.label});
+  const _ProcessConnector({required this.label, this.vertical = false});
 
   @override
   Widget build(BuildContext context) {
+    final labelText = Text(
+      label,
+      textAlign: TextAlign.center,
+      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: _subtext),
+    );
+
+    if (vertical) {
+      return SizedBox(
+        height: 64,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(child: Container(width: 1, color: const Color(0xFFBBBBBB))),
+            Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: labelText),
+            Expanded(child: Container(width: 1, color: const Color(0xFFBBBBBB))),
+          ],
+        ),
+      );
+    }
+
     return SizedBox(
       width: 110,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(child: Container(height: 1, color: const Color(0xFFBBBBBB))),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Text(
-              label,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: _subtext),
-            ),
-          ),
+          Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: labelText),
           Expanded(child: Container(height: 1, color: const Color(0xFFBBBBBB))),
         ],
-      ),
-    );
-  }
-}
-
-class _ResponsibilityCard extends StatefulWidget {
-  final IconData icon;
-  final String title;
-  final List<String> bullets;
-  final bool highlighted;
-
-  const _ResponsibilityCard({
-    required this.icon,
-    required this.title,
-    required this.bullets,
-    required this.highlighted,
-  });
-
-  @override
-  State<_ResponsibilityCard> createState() => _ResponsibilityCardState();
-}
-
-class _ResponsibilityCardState extends State<_ResponsibilityCard> {
-  bool _hovering = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final borderColor = widget.highlighted ? const Color(0xFF2E9BE0) : _darkTeal.withValues(alpha: 0.35);
-
-    return MouseRegion(
-      onEnter: (_) => setState(() => _hovering = true),
-      onExit: (_) => setState(() => _hovering = false),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: borderColor, width: widget.highlighted ? 1.5 : 1),
-          boxShadow: _hovering
-              ? [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 16, offset: const Offset(0, 6))]
-              : const [],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(color: _darkTeal, borderRadius: BorderRadius.circular(10)),
-                  child: Icon(widget.icon, size: 18, color: Colors.white),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  widget.title,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _darkTeal),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            for (final bullet in widget.bullets)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(Icons.check, size: 15, color: _teal),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(bullet, style: const TextStyle(fontSize: 13, color: Colors.black87)),
-                    ),
-                  ],
-                ),
-              ),
-          ],
-        ),
       ),
     );
   }

@@ -15,6 +15,7 @@ class FeatureList extends StatelessWidget {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
       ),
+      screenWidthFactor: 1,
       child: LayoutBuilder(
         builder: (context, constraints) {
           final isMobile = constraints.maxWidth < 768;

@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+import '../general/responsive.dart';
+
 class _TabItem {
   final String label;
   final String title;
@@ -72,26 +74,26 @@ class _TabFeaturesState extends State<TabFeatures> {
 
   @override
   Widget build(BuildContext context) {
+    final mobile = isMobile(context);
+
     return Column(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 12,
+          runSpacing: 12,
           children: [
             for (var i = 0; i < _tabs.length; i++)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6),
-                child: _FormatChip(
-                  label: _tabs[i].label,
-                  selected: _selectedIndex == i,
-                  onTap: () => setState(() => _selectedIndex = i),
-                ),
+              _FormatChip(
+                label: _tabs[i].label,
+                selected: _selectedIndex == i,
+                onTap: () => setState(() => _selectedIndex = i),
               ),
-            const SizedBox(width: 10),
           ],
         ),
         const SizedBox(height: 32),
         Container(
-          padding: const EdgeInsets.all(32),
+          padding: EdgeInsets.all(mobile ? 20 : 32),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
@@ -99,85 +101,97 @@ class _TabFeaturesState extends State<TabFeatures> {
               BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 16, offset: const Offset(0, 6)),
             ],
           ),
-          child: _buildTabContent(_tabs[_selectedIndex]),
+          child: _buildTabContent(_tabs[_selectedIndex], mobile),
         ),
       ],
     );
   }
 
-  Widget _buildTabContent(_TabItem item) {
-    return Row(
-      key: ValueKey(item.label),
+  Widget _buildTabContent(_TabItem item, bool mobile) {
+    final textColumn = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Expanded(
-          flex: 5,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                item.title,
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: textDark),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                item.description,
-                style: TextStyle(fontSize: 14, color: subtextColor, height: 1.4),
-              ),
-              const SizedBox(height: 20),
-              ...item.bulletPoints.map(
-                (point) => Padding(
-                  padding: const EdgeInsets.only(bottom: 10.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "• ",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textDark),
-                      ),
-                      Expanded(
-                        child: Text(point, style: TextStyle(fontSize: 14, color: subtextColor)),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+        Text(
+          item.title,
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: textDark),
         ),
-        const SizedBox(width: 32),
-        Expanded(
-          flex: 4,
-          child: SizedBox(
-            height: 260,
-            child: Stack(
+        const SizedBox(height: 12),
+        Text(
+          item.description,
+          style: TextStyle(fontSize: 14, color: subtextColor, height: 1.4),
+        ),
+        const SizedBox(height: 20),
+        ...item.bulletPoints.map(
+          (point) => Padding(
+            padding: const EdgeInsets.only(bottom: 10.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Transform.translate(
-                  offset: const Offset(2, 6),
-                  child: ImageFiltered(
-                    imageFilter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                    child: ColorFiltered(
-                      colorFilter: ColorFilter.mode(
-                        Colors.black.withValues(alpha: 0.35),
-                        BlendMode.srcIn,
-                      ),
-                      child: Image.asset(item.imagePath, fit: BoxFit.contain),
-                    ),
-                  ),
+                const Text(
+                  "• ",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textDark),
                 ),
-                Image.asset(
-                  item.imagePath,
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    color: const Color(0xFFF2F2F2),
-                    child: const Center(child: Icon(Icons.image, size: 48, color: Colors.black26)),
-                  ),
+                Expanded(
+                  child: Text(point, style: TextStyle(fontSize: 14, color: subtextColor)),
                 ),
               ],
             ),
           ),
         ),
+      ],
+    );
+
+    final imageWidget = SizedBox(
+      width: double.infinity,
+      height: 260,
+      child: Stack(
+        children: [
+          Transform.translate(
+            offset: const Offset(2, 6),
+            child: ImageFiltered(
+              imageFilter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+              child: ColorFiltered(
+                colorFilter: ColorFilter.mode(
+                  Colors.black.withValues(alpha: 0.35),
+                  BlendMode.srcIn,
+                ),
+                child: Image.asset(item.imagePath, fit: BoxFit.contain),
+              ),
+            ),
+          ),
+          Image.asset(
+            item.imagePath,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) => Container(
+              color: const Color(0xFFF2F2F2),
+              child: const Center(child: Icon(Icons.image, size: 48, color: Colors.black26)),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (mobile) {
+      return Column(
+        key: ValueKey(item.label),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          textColumn,
+          const SizedBox(height: 24),
+          imageWidget,
+        ],
+      );
+    }
+
+    return Row(
+      key: ValueKey(item.label),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Expanded(flex: 5, child: textColumn),
+        const SizedBox(width: 32),
+        Expanded(flex: 4, child: imageWidget),
       ],
     );
   }
@@ -214,27 +228,6 @@ class _FormatChip extends StatelessWidget {
             color: selected ? Colors.white : textDark,
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _AvatarBadge extends StatelessWidget {
-  const _AvatarBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 36,
-      height: 36,
-      decoration: const BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: LinearGradient(colors: [Color(0xFFB06AB3), Color(0xFF4568DC)]),
-      ),
-      alignment: Alignment.center,
-      child: const Text(
-        "N",
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
       ),
     );
   }

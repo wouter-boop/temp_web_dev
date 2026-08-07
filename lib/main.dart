@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:odontium_website/pages/beveiliging_page.dart';
+import 'package:odontium_website/pages/contact_page.dart';
+import 'package:odontium_website/pages/disciplines_page.dart';
 import 'package:odontium_website/pages/home_page.dart';
+import 'package:odontium_website/pages/integraties_page.dart';
+import 'package:odontium_website/pages/klant_verhalen_page.dart';
+import 'package:odontium_website/pages/mobiele_apps_page.dart';
 import 'package:odontium_website/pages/not_found_page.dart';
+import 'package:odontium_website/pages/over_ons_page.dart';
+import 'package:odontium_website/pages/overstappen_page.dart';
 import 'package:odontium_website/pages/product_page.dart';
 import 'package:odontium_website/pages/slimme_functies_page.dart';
+import 'package:odontium_website/pages/support_page.dart';
+import 'package:odontium_website/pages/veelgestelde_vragen_page.dart';
 import 'package:odontium_website/router.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -74,31 +83,59 @@ final GoRouter _router = GoRouter(
           ),
         ),
         GoRoute(
+          path: '/product/integraties',
+          pageBuilder: (context, state) => _slowPageTransition(
+            key: state.pageKey,
+            child: const IntegratiesPage(),
+          ),
+        ),
+        GoRoute(
+          path: '/product/mobiele_apps',
+          pageBuilder: (context, state) => _slowPageTransition(
+            key: state.pageKey,
+            child: const MobieleAppsPage(),
+          ),
+        ),
+        GoRoute(
           path: '/disciplines',
           pageBuilder: (context, state) => _slowPageTransition(
             key: state.pageKey,
-            child: const ProductPage(),
+            child: const DisciplinesPage(),
           ),
         ),
         GoRoute(
           path: '/overstappen',
           pageBuilder: (context, state) => _slowPageTransition(
             key: state.pageKey,
-            child: const ProductPage(),
+            child: const OverstappenPage(),
           ),
         ),
         GoRoute(
           path: '/over_ons',
           pageBuilder: (context, state) => _slowPageTransition(
             key: state.pageKey,
-            child: const ProductPage(),
+            child: const OverOnsPage(),
+          ),
+        ),
+        GoRoute(
+          path: '/over_ons/klantverhalen',
+          pageBuilder: (context, state) => _slowPageTransition(
+            key: state.pageKey,
+            child: const KlantVerhalenPage(),
+          ),
+        ),
+        GoRoute(
+          path: '/over_ons/veelgestelde_vragen',
+          pageBuilder: (context, state) => _slowPageTransition(
+            key: state.pageKey,
+            child: const VeelgesteldeVragenPage(),
           ),
         ),
         GoRoute(
           path: '/contact',
           pageBuilder: (context, state) => _slowPageTransition(
             key: state.pageKey,
-            child: const ProductPage(),
+            child: const ContactPage(),
           ),
         ),
         GoRoute(
@@ -112,7 +149,14 @@ final GoRouter _router = GoRouter(
           path: '/support',
           pageBuilder: (context, state) => _slowPageTransition(
             key: state.pageKey,
-            child: const ProductPage(),
+            child: const SupportPage(),
+          ),
+        ),
+        GoRoute(
+          path: '/veelgestelde-vragen',
+          pageBuilder: (context, state) => _slowPageTransition(
+            key: state.pageKey,
+            child: const VeelgesteldeVragenPage(),
           ),
         ),
       ],

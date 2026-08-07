@@ -13,6 +13,7 @@ import 'package:odontium_website/widgets/product_page/tab_features.dart';
 
 import '../widgets/checkmark_list.dart';
 import '../widgets/general/block_container.dart';
+import '../widgets/general/responsive.dart';
 import '../widgets/home_page/arrow_button.dart';
 
 class ProductPage extends StatefulWidget {
@@ -25,11 +26,16 @@ class ProductPage extends StatefulWidget {
 class _ProductPageState extends State<ProductPage> {
   @override
   Widget build(BuildContext context) {
+    final mobile = isMobile(context);
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
           children: [
-            BlockContainer(child: SidekickHero()),
+            BlockContainer(
+              screenWidthFactor: 1,
+              child: SidekickHero(),
+            ),
             BlockContainer(
               screenWidthFactor: 1,
               gradient: LinearGradient(
@@ -43,60 +49,110 @@ class _ProductPageState extends State<ProductPage> {
                   Text(
                     "Voor iedereen in uw praktijk",
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    "Iedere medewerker werkt anders. Daarom biedt Odontium een werkomgeving die aansluit op de dagelijkse werkzamnheden van iedere gebruiker, terwijl iedereen samenwerkt in het zelfde systeem.",
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 32),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      RoleCard(
-                        data: RoleCardData(
-                          icon: Icons.show_chart,
-                          title: 'Praktijkeigenaar',
-                          description:
-                              'Inzicht in omzet, bezetting en no-shows zonder handmatige rapportages.',
-                        ),
-                      ),
-                      const SizedBox(width: 32),
-                      RoleCard(
-                        data: RoleCardData(
-                          icon: Icons.medical_services_outlined,
-                          title: 'Behandelaar',
-                          description:
-                              'Volledig dossier in beeld tijdens de behandeling. Direct vastleggen, niet later uitwerken.',
-                        ),
-                      ),
-                    ],
+                  const SizedBox(height: 12),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 700),
+                    child: Text(
+                      "Iedere medewerker werkt anders. Daarom biedt Odontium een werkomgeving die aansluit op de dagelijkse werkzamnheden van iedere gebruiker, terwijl iedereen samenwerkt in het zelfde systeem.",
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                   const SizedBox(height: 32),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      RoleCard(
-                        data: RoleCardData(
-                          icon: Icons.headset_mic_outlined,
-                          title: 'Balie',
-                          description:
-                              'Plannen, verzetten en herinneren vanuit één scherm. Minder telefoon, minder gedoe.',
+                  mobile
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            RoleCard(
+                              data: RoleCardData(
+                                icon: Icons.show_chart,
+                                title: 'Praktijkeigenaar',
+                                description:
+                                    'Inzicht in omzet, bezetting en no-shows zonder handmatige rapportages.',
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            RoleCard(
+                              data: RoleCardData(
+                                icon: Icons.medical_services_outlined,
+                                title: 'Behandelaar',
+                                description:
+                                    'Volledig dossier in beeld tijdens de behandeling. Direct vastleggen, niet later uitwerken.',
+                              ),
+                            ),
+                          ],
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            RoleCard(
+                              data: RoleCardData(
+                                icon: Icons.show_chart,
+                                title: 'Praktijkeigenaar',
+                                description:
+                                    'Inzicht in omzet, bezetting en no-shows zonder handmatige rapportages.',
+                              ),
+                            ),
+                            const SizedBox(width: 32),
+                            RoleCard(
+                              data: RoleCardData(
+                                icon: Icons.medical_services_outlined,
+                                title: 'Behandelaar',
+                                description:
+                                    'Volledig dossier in beeld tijdens de behandeling. Direct vastleggen, niet later uitwerken.',
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(width: 32),
-                      RoleCard(
-                        data: RoleCardData(
-                          icon: Icons.people_outline,
-                          title: 'Assistent',
-                          description:
-                              'Voorbereiding, materialen en vervolgafspraken staan klaar voor elke behandeling.',
+                  const SizedBox(height: 32),
+                  mobile
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            RoleCard(
+                              data: RoleCardData(
+                                icon: Icons.headset_mic_outlined,
+                                title: 'Balie',
+                                description:
+                                    'Plannen, verzetten en herinneren vanuit één scherm. Minder telefoon, minder gedoe.',
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            RoleCard(
+                              data: RoleCardData(
+                                icon: Icons.people_outline,
+                                title: 'Assistent',
+                                description:
+                                    'Voorbereiding, materialen en vervolgafspraken staan klaar voor elke behandeling.',
+                              ),
+                            ),
+                          ],
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            RoleCard(
+                              data: RoleCardData(
+                                icon: Icons.headset_mic_outlined,
+                                title: 'Balie',
+                                description:
+                                    'Plannen, verzetten en herinneren vanuit één scherm. Minder telefoon, minder gedoe.',
+                              ),
+                            ),
+                            const SizedBox(width: 32),
+                            RoleCard(
+                              data: RoleCardData(
+                                icon: Icons.people_outline,
+                                title: 'Assistent',
+                                description:
+                                    'Voorbereiding, materialen en vervolgafspraken staan klaar voor elke behandeling.',
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),
@@ -107,27 +163,36 @@ class _ProductPageState extends State<ProductPage> {
               padding: EdgeInsetsGeometry.only(bottom: 0),
               child: Column(
                 children: [
-                  Text(
-                    "Waarom Odontium?",
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 16),
-                  ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: 900),
-                    child: FeatureChecklist(
-                      spacing: 30,
-                      items: const [
-                        'Meer tijd voor uw patiënten',
-                        'Persoonlijke ondersteuning',
-                        'Efficiënt en gebruiksvriendelijk',
-                        'Alles op één centrale plek',
-                        'Veilig en betrouwbaar',
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: mobile ? 20 : 0),
+                    child: Column(
+                      children: [
+                        Text(
+                          "Waarom Odontium?",
+                          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: 16),
+                        ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: 900),
+                          child: FeatureChecklist(
+                            spacing: 30,
+                            items: const [
+                              'Meer tijd voor uw patiënten',
+                              'Persoonlijke ondersteuning',
+                              'Efficiënt en gebruiksvriendelijk',
+                              'Alles op één centrale plek',
+                              'Veilig en betrouwbaar',
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
                   SizedBox(height: 64),
                   BlockContainer(
                     backgroundColor: Colors.white,
+                    screenWidthFactor: mobile ? 1 : 0.5,
                     child: SmallInfoBlock(
                       isLeft: false,
                       imagePath: "",
@@ -141,6 +206,7 @@ class _ProductPageState extends State<ProductPage> {
                   ),
                   BlockContainer(
                     backgroundColor: Color.fromRGBO(226, 238, 245, 1),
+                    screenWidthFactor: mobile ? 1 : 0.5,
                     child: SmallInfoBlock(
                       imagePath: "",
                       titel: "Patiëntenoverzicht",
@@ -153,6 +219,7 @@ class _ProductPageState extends State<ProductPage> {
                   ),
                   BlockContainer(
                     backgroundColor: Colors.white,
+                    screenWidthFactor: mobile ? 1 : 0.5,
                     child: SmallInfoBlock(
                       isLeft: false,
                       imagePath: "",
@@ -166,6 +233,7 @@ class _ProductPageState extends State<ProductPage> {
                   ),
                   BlockContainer(
                     backgroundColor: Color.fromRGBO(226, 238, 245, 1),
+                    screenWidthFactor: mobile ? 1 : 0.5,
                     child: SmallInfoBlock(
                       imagePath: "",
                       titel: "Documentbeheer",
@@ -178,6 +246,7 @@ class _ProductPageState extends State<ProductPage> {
                   ),
                   BlockContainer(
                     backgroundColor: Colors.white,
+                    screenWidthFactor: mobile ? 1 : 0.5,
                     child: SmallInfoBlock(
                       isLeft: false,
                       imagePath: "",
@@ -191,6 +260,7 @@ class _ProductPageState extends State<ProductPage> {
                   ),
                   BlockContainer(
                     backgroundColor: Color.fromRGBO(226, 238, 245, 1),
+                    screenWidthFactor: mobile ? 1 : 0.5,
                     child: SmallInfoBlock(
                       imagePath: "",
                       titel: "Rapportages & Inzichten",
@@ -205,6 +275,7 @@ class _ProductPageState extends State<ProductPage> {
               ),
             ),
             BlockContainer(
+              screenWidthFactor: mobile ? 1 : 0.5,
               gradient: LinearGradient(
                 colors: [Color.fromRGBO(226, 238, 245, 1), Colors.white],
                 stops: [0, 1],
@@ -220,32 +291,52 @@ class _ProductPageState extends State<ProductPage> {
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                     Text(
                       "Ga dieper in op wat Odontium voor uw praktijk kan betekenen.",
                       style: TextStyle(
                         fontSize: 16,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                     SizedBox(height: 64,),
                     Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        spacing: 64,
-                        children: [
-                        HoverArrowButton(label: "Slimme Functies", onPressed: ()=>{}),
-                        HoverArrowButton(label: "Integraties", onPressed: ()=>{})
-                      ],),
+                      child: mobile
+                          ? Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                HoverArrowButton(label: "Slimme Functies", onPressed: ()=>{}),
+                                const SizedBox(height: 16),
+                                HoverArrowButton(label: "Integraties", onPressed: ()=>{}),
+                              ],
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              spacing: 64,
+                              children: [
+                              HoverArrowButton(label: "Slimme Functies", onPressed: ()=>{}),
+                              HoverArrowButton(label: "Integraties", onPressed: ()=>{})
+                            ],),
                     ),
                     SizedBox(height: 32,),
                     Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        spacing: 64,
-                        children: [
-                        HoverArrowButton(label: "Slimme Functies", onPressed: ()=>{}),
-                        HoverArrowButton(label: "Integraties", onPressed: ()=>{})
-                      ],),
+                      child: mobile
+                          ? Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                HoverArrowButton(label: "Slimme Functies", onPressed: ()=>{}),
+                                const SizedBox(height: 16),
+                                HoverArrowButton(label: "Integraties", onPressed: ()=>{}),
+                              ],
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              spacing: 64,
+                              children: [
+                              HoverArrowButton(label: "Slimme Functies", onPressed: ()=>{}),
+                              HoverArrowButton(label: "Integraties", onPressed: ()=>{})
+                            ],),
                     ),
                   ],
                 ),
@@ -258,50 +349,87 @@ class _ProductPageState extends State<ProductPage> {
               screenWidthFactor: 1,
               child: Stack(
               children: [
-                Image.asset("lib/assets/frame.png"),
-                Padding(
-                  padding: const EdgeInsets.only(top: 64.0),
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text("Klaar om Odontium \nzelf te ervaren?", style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
-                        ConstrainedBox(constraints: BoxConstraints(maxWidth: 750), child: Text("Ontdek tijdens een vrijblijvende persoonlijke demo hoe Odontium uw praktijk helpt efficiënter te werken.", style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w100), textAlign: TextAlign.center)),
-                        SizedBox(height: 64,),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          spacing: 16,
-                          children: [
-                          ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Color.fromRGBO(37, 106, 130, 1),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 28,
-                                vertical: 18,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: const Text(
-                              'Plan een Demo',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          ArrowButton(text: "Ontdek Odontium", function: () => {}, white: true,),
-                        ],)
-                      ],
+                SizedBox(
+                  width: double.infinity,
+                  height: responsiveValue(context, desktop: 420, mobile: 640),
+                  child: Image.asset("lib/assets/frame.png", fit: BoxFit.cover),
+                ),
+                Positioned.fill(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      top: mobile ? 40.0 : 64.0,
+                      left: 24.0,
+                      right: 24.0,
+                    ),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("Klaar om Odontium \nzelf te ervaren?", style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
+                          ConstrainedBox(constraints: BoxConstraints(maxWidth: 750), child: Text("Ontdek tijdens een vrijblijvende persoonlijke demo hoe Odontium uw praktijk helpt efficiënter te werken.", style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w100), textAlign: TextAlign.center)),
+                          SizedBox(height: 64,),
+                          mobile
+                              ? Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: () {},
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.white,
+                                        foregroundColor: Color.fromRGBO(37, 106, 130, 1),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 28,
+                                          vertical: 18,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(30),
+                                        ),
+                                        elevation: 0,
+                                      ),
+                                      child: const Text(
+                                        'Plan een Demo',
+                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    ArrowButton(text: "Ontdek Odontium", function: () => {}, white: true,),
+                                  ],
+                                )
+                              : Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  spacing: 16,
+                                  children: [
+                                  ElevatedButton(
+                                    onPressed: () {},
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                      foregroundColor: Color.fromRGBO(37, 106, 130, 1),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 28,
+                                        vertical: 18,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
+                                      elevation: 0,
+                                    ),
+                                    child: const Text(
+                                      'Plan een Demo',
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  ArrowButton(text: "Ontdek Odontium", function: () => {}, white: true,),
+                                ],)
+                        ],
+                      ),
                     ),
                   ),
                 )
               ],
             ),),
-            BlockContainer(child: WebsiteFooter(), screenWidthFactor: 1, hasHorizontalPadding: false, padding: EdgeInsetsGeometry.only(bottom: 0),)
+            WebsiteFooter()
           ],
         ),
       ),
@@ -331,33 +459,53 @@ class SmallInfoBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mobile = isMobile(context);
+
+    final image = ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: mobile ? double.infinity : 460),
+      child: Image.asset(imagePath, fit: BoxFit.contain),
+    );
+
+    final textBlock = Container(
+      width: mobile ? double.infinity : 340,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            titel,
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 8),
+          Text(subtitel),
+          SizedBox(height: 8),
+          Text('• ' + punt1),
+          SizedBox(height: 16),
+          Text("• " + punt2),
+          SizedBox(height: 16),
+          Text("• " + punt3),
+        ],
+      ),
+    );
+
+    if (mobile) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          image,
+          const SizedBox(height: 24),
+          textBlock,
+        ],
+      );
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       spacing: 64,
       children: [
-        isLeft ? Image.asset(imagePath) : Container(),
-        Container(
-          width: 340,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                titel,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(subtitel),
-              SizedBox(height: 8),
-              Text('\u2022 ' + punt1),
-              SizedBox(height: 16),
-              Text("\u2022 " + punt2),
-              SizedBox(height: 16),
-              Text("\u2022 " + punt3),
-            ],
-          ),
-        ),
-        isLeft ? Container() : Image.asset(imagePath),
+        isLeft ? image : Container(),
+        textBlock,
+        isLeft ? Container() : image,
       ],
     );
   }

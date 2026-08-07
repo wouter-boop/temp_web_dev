@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../general/responsive.dart';
+
 class FAQItem {
   final String question;
   final String answer;
@@ -13,6 +15,7 @@ class FAQSection extends StatelessWidget {
     required this.items,
     this.title = "Veelgestelde vragen",
     this.titleFontSize = 48,
+    this.showTitle = true,
     this.useChevronIcon = false,
     this.showTopDivider = false,
     this.trailing,
@@ -21,24 +24,31 @@ class FAQSection extends StatelessWidget {
   final String title;
   final List<FAQItem> items;
   final double titleFontSize;
+  final bool showTitle;
   final bool useChevronIcon;
   final bool showTopDivider;
   final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
+    final effectiveTitleFontSize = isMobile(context)
+        ? (titleFontSize < 28 ? titleFontSize : 28.0)
+        : titleFontSize;
+
     return Column(
       children: [
-        Text(
-          title,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: titleFontSize,
-            fontWeight: FontWeight.bold,
-            color: const Color(0xFF0B4A53),
+        if (showTitle) ...[
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: effectiveTitleFontSize,
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF0B4A53),
+            ),
           ),
-        ),
-        const SizedBox(height: 56),
+          SizedBox(height: isMobile(context) ? 32 : 56),
+        ],
         if (showTopDivider) const Divider(height: 1, thickness: 1, color: Color(0xFF7FA5AF)),
         ...items.map((e) => _FAQTile(item: e, useChevronIcon: useChevronIcon)),
         if (trailing != null) ...[

@@ -88,16 +88,23 @@ class _TextMarqueeState extends State<TextMarquee> with SingleTickerProviderStat
       children: [
         for (final item in widget.children)
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: widget.spacing, vertical: 0),
-            child: Padding(padding: EdgeInsetsGeometry.symmetric(horizontal: 16), child: Text(
-              item,
-              style: TextStyle(
-                fontSize: 18,
-                fontFamily: "Segoe UI",
-                fontWeight: FontWeight.bold,
-                color: Colors.black54
+            padding: EdgeInsets.symmetric(horizontal: widget.spacing),
+            child: SizedBox(
+              width: widget.itemWidth,
+              child: Text(
+                item,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                softWrap: false,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontFamily: "Segoe UI",
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
               ),
-            ))
+            ),
           ),
       ],
     );

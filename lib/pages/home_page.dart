@@ -15,6 +15,7 @@ import '../proto/agenda.pbgrpc.dart';
 import '../widgets/review_section.dart';
 import '../widgets/support_features.dart';
 import '../widgets/home_page/cluster_decoration.dart';
+import '../widgets/general/responsive.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
@@ -24,6 +25,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
+    final mobile = isMobile(context);
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -72,16 +74,19 @@ class HomePage extends StatelessWidget {
                       child: Column(
                         children: [
                           SizedBox(height: 48),
-                          const Text(
-                            'Alles wat uw praktijk nodig \nheeft in één systeem',
-                            style: TextStyle(
-                              fontSize: 52,
-                              height: 1.1,
-                              fontFamily: "Segoe UI",
-                              fontWeight: FontWeight.w900,
-                              color: Color(0xFF0F382C),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: mobile ? 24.0 : 0.0),
+                            child: Text(
+                              'Alles wat uw praktijk nodig \nheeft in één systeem',
+                              style: TextStyle(
+                                fontSize: mobile ? 32 : 52,
+                                height: 1.15,
+                                fontFamily: "Segoe UI",
+                                fontWeight: FontWeight.w900,
+                                color: const Color(0xFF0F382C),
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
                           ),
                           SizedBox(height: 32),
                           Container(
@@ -111,7 +116,7 @@ class HomePage extends StatelessWidget {
                       backgroundColor: Colors.grey,
                       child: DisciplineShowcaseSection(),
                     ),
-                    BlockContainer(child: TestimonialSection(
+                    BlockContainer(screenWidthFactor: 1, child: TestimonialSection(
                       data: TestimonialData(
                         photoAsset: 'assets/images/testimonial_joep.jpg',
                         authorName: 'Joep van Engelen',
@@ -310,12 +315,7 @@ class HomePage extends StatelessWidget {
             //   ),
             // ),
 
-            BlockContainer(
-              screenWidthFactor: 1,
-              padding: EdgeInsets.zero,
-              hasHorizontalPadding: false,
-              child: WebsiteFooter(),
-            ),
+            WebsiteFooter(),
           ],
         ),
       ),

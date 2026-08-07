@@ -20,9 +20,9 @@ class CustomRouter extends StatelessWidget {
   ];
 
   static const Map<int, List<String>> _subRouteMaps = {
-    1: ['/product/odontium-overzicht', '/product/slimme-functies', '/product/beveiliging', '/product/updates'],
+    1: ['/product/odontium-overzicht', '/product/slimme-functies', '/product/beveiliging', '/product/integraties', '/product/mobiele_apps'],
     2: ['/disciplines/algemeen', '/disciplines/orthodontie', '/disciplines/implantaten', '/disciplines/kindertandheelkunde'],
-    4: ['/over_ons/team', '/over_ons/vacatures', '/over_ons/pers'],
+    4: ['/over_ons', '/over_ons/klantverhalen', '/veelgestelde-vragen'],
     7: ['/support/documentatie', '/support/helpcenter', '/support/status'],
   };
 

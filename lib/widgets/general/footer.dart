@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'block_container.dart';
-
+import 'responsive.dart';
 
 class WebsiteFooter extends StatelessWidget {
   const WebsiteFooter({super.key});
@@ -9,44 +9,81 @@ class WebsiteFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final mobile = isMobile(context);
+    final compact = mobile || isTablet(context);
+
+    final columns = [
+      _CompanyInfo(theme: theme),
+      _QuickLinks(theme: theme),
+      _ContactInfo(theme: theme),
+      _Certificates(theme: theme),
+    ];
 
     return BlockContainer(
       backgroundColor: const Color(0xFF474747),
-      padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 64),
+      padding: EdgeInsets.symmetric(horizontal: mobile ? 20 : 48, vertical: mobile ? 40 : 64),
       screenWidthFactor: 0.8,
       child: Column(
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(flex: 3, child: _CompanyInfo(theme: theme)),
-              const SizedBox(width: 60),
-              Expanded(flex: 2, child: _QuickLinks(theme: theme)),
-              const SizedBox(width: 60),
-              Expanded(flex: 2, child: _ContactInfo(theme: theme)),
-              const SizedBox(width: 60),
-              Expanded(flex: 3, child: _Certificates(theme: theme)),
-            ],
-          ),
+          compact
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (var i = 0; i < columns.length; i++) ...[
+                      if (i != 0) const SizedBox(height: 32),
+                      columns[i],
+                    ],
+                  ],
+                )
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(flex: 3, child: columns[0]),
+                    const SizedBox(width: 60),
+                    Expanded(flex: 2, child: columns[1]),
+                    const SizedBox(width: 60),
+                    Expanded(flex: 2, child: columns[2]),
+                    const SizedBox(width: 60),
+                    Expanded(flex: 3, child: columns[3]),
+                  ],
+                ),
 
-          const SizedBox(height: 48),
+          SizedBox(height: mobile ? 32 : 48),
 
           Divider(color: Colors.white.withValues(alpha: .15)),
 
           const SizedBox(height: 24),
 
-          Row(
-            children: [
-              Text(
-                "© 2026 Your Company Name. All rights reserved.",
-                style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.bold),
-              ),
-              const Spacer(),
-              TextButton(onPressed: () {}, child: const Text("Privacy Policy")),
-              TextButton(onPressed: () {}, child: const Text("Cookies")),
-              TextButton(onPressed: () {}, child: const Text("Terms")),
-            ],
-          ),
+          mobile
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "© 2026 Your Company Name. All rights reserved.",
+                      style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      children: [
+                        TextButton(onPressed: () {}, child: const Text("Privacy Policy")),
+                        TextButton(onPressed: () {}, child: const Text("Cookies")),
+                        TextButton(onPressed: () {}, child: const Text("Terms")),
+                      ],
+                    ),
+                  ],
+                )
+              : Row(
+                  children: [
+                    const Text(
+                      "© 2026 Your Company Name. All rights reserved.",
+                      style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.bold),
+                    ),
+                    const Spacer(),
+                    TextButton(onPressed: () {}, child: const Text("Privacy Policy")),
+                    TextButton(onPressed: () {}, child: const Text("Cookies")),
+                    TextButton(onPressed: () {}, child: const Text("Terms")),
+                  ],
+                ),
         ],
       ),
     );
