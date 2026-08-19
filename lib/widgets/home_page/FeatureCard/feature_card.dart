@@ -102,6 +102,7 @@ class FeatureCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return HoverLift(
       child: Container(
+        height: 262,
       width: 260,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(

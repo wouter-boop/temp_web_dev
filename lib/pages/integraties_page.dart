@@ -77,8 +77,8 @@ class _IntegratiesPageState extends State<IntegratiesPage> {
   static const List<_SystemData> _labelprinterSystems = [
     _SystemData(name: "Dymo", imagePath: "lib/assets/logo_dymo.svg",
         backText: "Labels printen rechtstreeks vanuit het dossier."),
-    _SystemData(
-        name: "Zebra", backText: "Professioneel labelen en barcodes printen."),
+    _SystemData(name: "Zebra", imagePath: "lib/assets/logo_zebra.svg",
+        backText: "Professioneel labelen en barcodes printen."),
     _SystemData(name: "QR code scanners",
         backText: "Snel en foutloos gegevens invoeren."),
     _SystemData(name: "Brother", imagePath: "lib/assets/logo_brother.svg",
