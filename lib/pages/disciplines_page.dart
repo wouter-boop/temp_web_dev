@@ -1,9 +1,17 @@
+import '../widgets/general/auto_scroll_view.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import '../widgets/general/type_scale.dart';
+import '../widgets/general/content_container.dart';
+import 'package:go_router/go_router.dart';
 
 import '../widgets/general/block_container.dart';
 import '../widgets/general/demo_cta_banner.dart';
 import '../widgets/general/footer.dart';
+import '../widgets/general/micro_animations.dart';
 import '../widgets/general/responsive.dart';
+import '../widgets/general/reveal_on_scroll.dart';
 
 const _darkTeal = Color(0xFF0F3B3F);
 const _teal = Color(0xFF17A8A6);
@@ -22,6 +30,17 @@ class _DisciplinesPageState extends State<DisciplinesPage> {
   final Map<String, GlobalKey> _sectionKeys = {
     for (final tab in _tabs) tab.id: GlobalKey(),
   };
+
+  /// Section that was just navigated to via the tab grid; it briefly gets a
+  /// teal glow so the visitor's eye lands in the right place.
+  String? _highlightedId;
+  Timer? _highlightTimer;
+
+  @override
+  void dispose() {
+    _highlightTimer?.cancel();
+    super.dispose();
+  }
 
   static const List<_DisciplineTab> _tabs = [
     _DisciplineTab(id: "tandarts", icon: Icons.medical_services_outlined, navLabel: "Tandartspraktijken"),
@@ -59,7 +78,7 @@ class _DisciplinesPageState extends State<DisciplinesPage> {
           "direct openen vanuit uw eigen apparatuur",
         ),
       ],
-      imagePath: "lib/assets/discipline_tandarts_screenshot.png",
+      imagePath: "lib/assets/tandarts_screen_2.png",
       imageOnLeft: true,
       lightBackground: false,
     ),
@@ -83,7 +102,7 @@ class _DisciplinesPageState extends State<DisciplinesPage> {
           "ook als vrijgevestigde praktijk, zonder tussenkomst van een tandarts",
         ),
       ],
-      imagePath: "lib/assets/discipline_mondhygienist_screenshot.png",
+      imagePath: "lib/assets/mondhygienist_screen.png",
       imageOnLeft: false,
       lightBackground: true,
     ),
@@ -94,7 +113,7 @@ class _DisciplinesPageState extends State<DisciplinesPage> {
           "Van intake tot nazorg: Odontium houdt patiëntinformatie, machtigingen en administratie "
           "overzichtelijk bij elkaar.",
       items: _tandLabItems,
-      imagePath: "lib/assets/discipline_tandprotheticus_screenshot.png",
+      imagePath: "lib/assets/protheticus_screen.png",
       imageOnLeft: true,
       lightBackground: false,
     ),
@@ -105,7 +124,7 @@ class _DisciplinesPageState extends State<DisciplinesPage> {
           "Van intake tot nazorg: Odontium houdt patiëntinformatie, machtigingen en administratie "
           "overzichtelijk bij elkaar.",
       items: _tandLabItems,
-      imagePath: "lib/assets/discipline_tandtechnisch_screenshot.png",
+      imagePath: "lib/assets/technicus.png",
       imageOnLeft: false,
       lightBackground: true,
     ),
@@ -114,7 +133,7 @@ class _DisciplinesPageState extends State<DisciplinesPage> {
   static const List<_DisciplineChecklistItem> _tandLabItems = [
     _DisciplineChecklistItem(
       "Machtigingen:",
-      "aanvragen indienen en de status volgen zonder losse",
+      "Aanvragen indienen direct naar Vecozo",
     ),
     _DisciplineChecklistItem(
       "Behandeling in fasen:",
@@ -135,28 +154,34 @@ class _DisciplinesPageState extends State<DisciplinesPage> {
         curve: Curves.easeInOut,
         alignment: 0.08,
       );
+      setState(() => _highlightedId = id);
+      _highlightTimer?.cancel();
+      _highlightTimer = Timer(const Duration(milliseconds: 1800), () {
+        if (mounted) setState(() => _highlightedId = null);
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
+      body: AutoScrollView(
         child: Column(
           children: [
             const SizedBox(height: 56),
             BlockContainer(
-              child: Column(
+              child: RevealOnScroll(
+                child: Column(
                 children: [
                   const Text(
                     "DISCIPLINES",
                     style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _teal, letterSpacing: 1.2),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     "Praktijksoftware voor\niedere discipline",
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold, color: _darkTeal, height: 1.25),
+                    style: TextStyle(fontSize: AppFont.h1(context), fontWeight: FontWeight.bold, color: _darkTeal, height: 1.25),
                   ),
                   const SizedBox(height: 16),
                   ConstrainedBox(
@@ -175,30 +200,38 @@ class _DisciplinesPageState extends State<DisciplinesPage> {
                     spacing: 16,
                     runSpacing: 12,
                     children: [
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _teal,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                          elevation: 0,
+                      HoverScale(
+                        child: PulseGlow(
+                          borderRadius: 20,
+                          child: ElevatedButton(
+                            onPressed: () => context.go('/contact'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: _teal,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                              elevation: 0,
+                            ),
+                            child: const Text("Plan een demo", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                          ),
                         ),
-                        child: const Text("Plan een demo", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                       ),
-                      OutlinedButton(
-                        onPressed: () {},
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: _darkTeal,
-                          side: const BorderSide(color: Color(0xFFDADADA)),
-                          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      HoverScale(
+                        child: OutlinedButton(
+                          onPressed: () => context.go('/Odontium'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: _darkTeal,
+                            side: const BorderSide(color: Color(0xFFDADADA)),
+                            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                          ),
+                          child: const Text("Ontdek Odontium", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                         ),
-                        child: const Text("Ontdek Odontium", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                       ),
                     ],
                   ),
                 ],
+                ),
               ),
             ),
             BlockContainer(
@@ -206,6 +239,9 @@ class _DisciplinesPageState extends State<DisciplinesPage> {
               hasHorizontalPadding: false,
               padding: const EdgeInsets.symmetric(vertical: 32),
               backgroundColor: _showcaseTop,
+              // Feather the dark band into the light sections around it.
+              softTopEdge: const Color(0xFFF8F9FB),
+              softBottomEdge: const Color(0xFFF8F9FB),
               child: DecoratedBox(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
@@ -217,8 +253,7 @@ class _DisciplinesPageState extends State<DisciplinesPage> {
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 32, horizontal: isMobile(context) ? 20 : 24),
                   child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 1000),
+                    child: ContentContainer(
                       child: _buildTabGrid(context),
                     ),
                   ),
@@ -227,12 +262,13 @@ class _DisciplinesPageState extends State<DisciplinesPage> {
             ),
             for (final detail in _details) _buildDetailSection(detail),
             BlockContainer(
-              child: Column(
+              child: RevealOnScroll(
+                child: Column(
                 children: [
-                  const Text(
+                  Text(
                     "En als uw praktijk meerdere\ndisciplines combineert?",
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: _darkTeal, height: 1.3),
+                    style: TextStyle(fontSize: AppFont.h2(context), fontWeight: FontWeight.bold, color: _darkTeal, height: 1.3),
                   ),
                   const SizedBox(height: 16),
                   ConstrainedBox(
@@ -246,20 +282,23 @@ class _DisciplinesPageState extends State<DisciplinesPage> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  OutlinedButton(
-                    onPressed: () {},
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: _darkTeal,
-                      side: const BorderSide(color: Color(0xFFDADADA)),
-                      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                    ),
-                    child: const Text(
-                      "Neem contact met ons op",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                  HoverScale(
+                    child: OutlinedButton(
+                      onPressed: () => context.go('/contact'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: _darkTeal,
+                        side: const BorderSide(color: Color(0xFFDADADA)),
+                        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      ),
+                      child: const Text(
+                        "Neem contact met ons op",
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                      ),
                     ),
                   ),
                 ],
+                ),
               ),
             ),
             const DemoCtaBanner(
@@ -298,10 +337,14 @@ class _DisciplinesPageState extends State<DisciplinesPage> {
                 for (var c = 0; c < rowTabs.length; c++) ...[
                   if (c != 0) SizedBox(width: mobile ? 16 : 20),
                   Expanded(
-                    child: _DisciplineTabCard(
-                      icon: rowTabs[c].icon,
-                      label: rowTabs[c].navLabel,
-                      onTap: () => _scrollToDiscipline(rowTabs[c].id),
+                    child: RevealOnScroll(
+                      delay: Duration(milliseconds: (i + c) * 110),
+                      offset: const Offset(0, 28),
+                      child: _DisciplineTabCard(
+                        icon: rowTabs[c].icon,
+                        label: rowTabs[c].navLabel,
+                        onTap: () => _scrollToDiscipline(rowTabs[c].id),
+                      ),
                     ),
                   ),
                 ],
@@ -317,11 +360,29 @@ class _DisciplinesPageState extends State<DisciplinesPage> {
 
   Widget _buildDetailSection(_DisciplineDetail detail) {
     final mobile = isMobile(context);
-    final image = _ScreenshotPlaceholder(imagePath: detail.imagePath);
+    final highlighted = _highlightedId == detail.id;
+
+    // Screenshot slides in from its own side of the layout; the checklist
+    // items cascade in one by one from the opposite side.
+    final image = RevealOnScroll(
+      offset: mobile ? const Offset(0, 32) : Offset(detail.imageOnLeft ? -48 : 48, 0),
+      child: HoverLift(
+        lift: 5,
+        borderRadius: 12,
+        child: _ScreenshotPlaceholder(imagePath: detail.imagePath),
+      ),
+    );
     final checklist = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
-      children: [for (final item in detail.items) _ChecklistRow(item: item)],
+      children: [
+        for (var i = 0; i < detail.items.length; i++)
+          RevealOnScroll(
+            delay: Duration(milliseconds: 120 + i * 120),
+            offset: mobile ? const Offset(0, 20) : Offset(detail.imageOnLeft ? 32 : -32, 0),
+            child: _ChecklistRow(item: detail.items[i]),
+          ),
+      ],
     );
 
     final content = mobile
@@ -348,27 +409,48 @@ class _DisciplinesPageState extends State<DisciplinesPage> {
       backgroundColor: detail.lightBackground ? const Color.fromRGBO(226, 238, 245, 1) : const Color(0xFFF8F9FB),
       screenWidthFactor: 1,
       child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1000),
-          child: Column(
-            children: [
-              Text(
-                detail.heading,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: _darkTeal),
+        child: ContentContainer(
+          // Flashes a teal outline when this section was jumped to from the
+          // tab grid, then eases back to invisible.
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 450),
+            curve: Curves.easeInOut,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: highlighted ? _teal : Colors.transparent,
+                width: 1.5,
               ),
-              const SizedBox(height: 16),
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 650),
-                child: Text(
-                  detail.description,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 14, color: _subtext, height: 1.5),
+              boxShadow: highlighted
+                  ? [BoxShadow(color: _teal.withValues(alpha: 0.25), blurRadius: 28, spreadRadius: 2)]
+                  : const [],
+            ),
+            child: Column(
+              children: [
+                RevealOnScroll(
+                  child: Text(
+                    detail.heading,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: AppFont.h2(context), fontWeight: FontWeight.bold, color: _darkTeal),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 40),
-              content,
-            ],
+                const SizedBox(height: 16),
+                RevealOnScroll(
+                  delay: const Duration(milliseconds: 100),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 650),
+                    child: Text(
+                      detail.description,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 14, color: _subtext, height: 1.5),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 40),
+                content,
+              ],
+            ),
           ),
         ),
       ),
@@ -433,29 +515,55 @@ class _DisciplineTabCardState extends State<_DisciplineTabCard> {
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: widget.onTap,
-        child: AnimatedContainer(
+        child: AnimatedScale(
+          scale: _hovering ? 1.05 : 1.0,
           duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-          decoration: BoxDecoration(
-            color: _hovering ? Colors.white : Colors.white.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: _hovering ? const Color(0xFF2E9BE0) : Colors.transparent, width: 1.5),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(widget.icon, size: 28, color: _hovering ? _teal : Colors.white),
-              const SizedBox(height: 12),
-              Text(
-                widget.label,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: _hovering ? _darkTeal : Colors.white,
+          curve: Curves.easeOutCubic,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+            decoration: BoxDecoration(
+              color: _hovering ? Colors.white : Colors.white.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: _hovering ? const Color(0xFF2E9BE0) : Colors.transparent, width: 1.5),
+              boxShadow: _hovering
+                  ? [BoxShadow(color: Colors.black.withValues(alpha: 0.18), blurRadius: 18, offset: const Offset(0, 8))]
+                  : const [],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AnimatedScale(
+                  scale: _hovering ? 1.2 : 1.0,
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeOutBack,
+                  child: Icon(widget.icon, size: 28, color: _hovering ? _teal : Colors.white),
                 ),
-              ),
-            ],
+                const SizedBox(height: 12),
+                Text(
+                  widget.label,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: _hovering ? _darkTeal : Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                // Hint that the card jumps down the page; space is reserved
+                // so the card doesn't grow on hover.
+                AnimatedSlide(
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeOutCubic,
+                  offset: _hovering ? Offset.zero : const Offset(0, -0.4),
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 200),
+                    opacity: _hovering ? 1 : 0,
+                    child: const Icon(Icons.arrow_downward_rounded, size: 16, color: _teal),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -463,35 +571,66 @@ class _DisciplineTabCardState extends State<_DisciplineTabCard> {
   }
 }
 
-class _ChecklistRow extends StatelessWidget {
+class _ChecklistRow extends StatefulWidget {
   final _DisciplineChecklistItem item;
 
   const _ChecklistRow({required this.item});
 
   @override
+  State<_ChecklistRow> createState() => _ChecklistRowState();
+}
+
+class _ChecklistRowState extends State<_ChecklistRow> {
+  bool _hovering = false;
+
+  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Icon(Icons.check, size: 18, color: _teal),
-          const SizedBox(width: 10),
-          Expanded(
-            child: RichText(
-              text: TextSpan(
-                style: const TextStyle(fontSize: 14, color: Colors.black87, height: 1.5),
-                children: [
-                  TextSpan(
-                    text: '${item.title} ',
-                    style: const TextStyle(fontWeight: FontWeight.bold, color: _darkTeal),
-                  ),
-                  TextSpan(text: item.description),
-                ],
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovering = true),
+      onExit: (_) => setState(() => _hovering = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutCubic,
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: EdgeInsets.only(
+          left: _hovering ? 14 : 8,
+          right: 8,
+          top: 8,
+          bottom: 8,
+        ),
+        decoration: BoxDecoration(
+          color: _hovering ? Colors.white.withValues(alpha: 0.9) : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: _hovering
+              ? [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 12, offset: const Offset(0, 4))]
+              : const [],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AnimatedScale(
+              scale: _hovering ? 1.3 : 1.0,
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeOutBack,
+              child: const Icon(Icons.check, size: 18, color: _teal),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text.rich(
+                TextSpan(
+                  style: const TextStyle(fontSize: 14, color: Colors.black87, height: 1.5),
+                  children: [
+                    TextSpan(
+                      text: '${widget.item.title} ',
+                      style: const TextStyle(fontWeight: FontWeight.bold, color: _darkTeal),
+                    ),
+                    TextSpan(text: widget.item.description),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -512,9 +651,28 @@ class _ScreenshotPlaceholder extends StatelessWidget {
           imagePath,
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) => Container(
-            decoration: BoxDecoration(color: Colors.white, border: Border.all(color: const Color(0xFFDADADA))),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFE9F2F6), Color(0xFFD5E7EE)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
             alignment: Alignment.center,
-            child: const Icon(Icons.dashboard_customize_outlined, size: 48, color: Color(0xFFBBBBBB)),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Floating(
+                  amplitude: 5,
+                  child: const Icon(Icons.dashboard_customize_outlined, size: 48, color: Color(0xFF9FBCC9)),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  "Screenshot volgt",
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF9FBCC9)),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -90,8 +90,8 @@ class TestimonialSection extends StatelessWidget {
                         Stack(
                           clipBehavior: Clip.none,
                           children: [
-                            RichText(
-                              text: TextSpan(
+                            Text.rich(
+                              TextSpan(
                                 style: TextStyle(fontSize: 18 * scale, height: 1.55, color: Colors.blueGrey.shade900),
                                 children: data.quote,
                               ),
@@ -167,12 +167,12 @@ class TestimonialSection extends StatelessWidget {
         const SizedBox(height: 20),
         const _QuoteMark(),
         const SizedBox(height: 4),
-        RichText(
-          textAlign: TextAlign.center,
-          text: TextSpan(
+        Text.rich(
+          TextSpan(
             style: TextStyle(fontSize: 15, height: 1.55, color: Colors.blueGrey.shade900),
             children: data.quote,
           ),
+          textAlign: TextAlign.center,
         ),
         const SizedBox(height: 20),
         Text(

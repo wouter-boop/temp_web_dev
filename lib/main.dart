@@ -1,29 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:odontium_website/pages/beveiliging_page.dart';
-import 'package:odontium_website/pages/contact_page.dart';
-import 'package:odontium_website/pages/disciplines_page.dart';
-import 'package:odontium_website/pages/home_page.dart';
-import 'package:odontium_website/pages/integraties_page.dart';
-import 'package:odontium_website/pages/klant_verhalen_page.dart';
-import 'package:odontium_website/pages/mobiele_apps_page.dart';
-import 'package:odontium_website/pages/not_found_page.dart';
-import 'package:odontium_website/pages/over_ons_page.dart';
-import 'package:odontium_website/pages/overstappen_page.dart';
-import 'package:odontium_website/pages/product_page.dart';
-import 'package:odontium_website/pages/slimme_functies_page.dart';
-import 'package:odontium_website/pages/support_page.dart';
-import 'package:odontium_website/pages/veelgestelde_vragen_page.dart';
-import 'package:odontium_website/router.dart';
+import 'package:Odontium/pages/beveiliging_page.dart';
+import 'package:Odontium/pages/contact_page.dart';
+import 'package:Odontium/pages/disciplines_page.dart';
+import 'package:Odontium/pages/home_page.dart';
+import 'package:Odontium/pages/integraties_page.dart';
+import 'package:Odontium/pages/klant_verhalen_page.dart';
+import 'package:Odontium/pages/mobiele_apps_page.dart';
+import 'package:Odontium/pages/not_found_page.dart';
+import 'package:Odontium/pages/over_ons_page.dart';
+import 'package:Odontium/pages/overstappen_page.dart';
+import 'package:Odontium/pages/product_page.dart';
+import 'package:Odontium/pages/slimme_functies_page.dart';
+import 'package:Odontium/pages/support_page.dart';
+import 'package:Odontium/pages/veelgestelde_vragen_page.dart';
+import 'package:Odontium/router.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'connections/grpc_client.dart';
 import 'i18n/strings.g.dart';
+import 'widgets/general/type_scale.dart';
 
 CustomTransitionPage<void> _slowPageTransition({
   required LocalKey key,
   required Widget child,
-  Duration duration = const Duration(milliseconds: 50), // Adjust speed here
+  Duration duration = const Duration(milliseconds: 250), // Adjust speed here
 }) {
   return CustomTransitionPage(
     key: key,
@@ -55,42 +56,42 @@ final GoRouter _router = GoRouter(
               _slowPageTransition(key: state.pageKey, child: HomePage()),
         ),
         GoRoute(
-          path: '/product',
+          path: '/Odontium',
           pageBuilder: (context, state) => _slowPageTransition(
             key: state.pageKey,
             child: const ProductPage(),
           ),
         ),
         GoRoute(
-          path: '/product/odontium-overzicht',
+          path: '/Odontium/overzicht',
           pageBuilder: (context, state) => _slowPageTransition(
             key: state.pageKey,
             child: const ProductPage(),
           ),
         ),
         GoRoute(
-          path: '/product/slimme-functies',
+          path: '/Odontium/slimme-functies',
           pageBuilder: (context, state) => _slowPageTransition(
             key: state.pageKey,
             child: const SlimmeFunctiesPage(),
           ),
         ),
         GoRoute(
-          path: '/product/beveiliging',
+          path: '/Odontium/beveiliging',
           pageBuilder: (context, state) => _slowPageTransition(
             key: state.pageKey,
             child: const BeveiligingPage(),
           ),
         ),
         GoRoute(
-          path: '/product/integraties',
+          path: '/Odontium/integraties',
           pageBuilder: (context, state) => _slowPageTransition(
             key: state.pageKey,
             child: const IntegratiesPage(),
           ),
         ),
         GoRoute(
-          path: '/product/mobiele_apps',
+          path: '/Odontium/mobiele_apps',
           pageBuilder: (context, state) => _slowPageTransition(
             key: state.pageKey,
             child: const MobieleAppsPage(),
@@ -142,7 +143,7 @@ final GoRouter _router = GoRouter(
           path: '/demo',
           pageBuilder: (context, state) => _slowPageTransition(
             key: state.pageKey,
-            child: const ProductPage(),
+            child: const ContactPage(),
           ),
         ),
         GoRoute(
@@ -164,10 +165,11 @@ final GoRouter _router = GoRouter(
   ],
 );
 
-void main() async {
-  final grpcClient = AgendaGrpcClient.init(host: '127.0.0.1', port: 50051);
-  await grpcClient.warmUpConnection();
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  // Warm up in the background: awaiting this held the first paint hostage
+  // for up to 2 seconds whenever the gRPC backend wasn't reachable.
+  AgendaGrpcClient.init(host: '127.0.0.1', port: 50051).warmUpConnection();
   LocaleSettings.useDeviceLocale();
   runApp(TranslationProvider(child: MyApp()));
 }
@@ -193,6 +195,10 @@ class MyApp extends StatelessWidget {
         fontFamily: "Segoe UI",
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.cyan),
       ),
+      // Grows the whole type scale from the authored 1080p sizes up to the
+      // 4K design spec. Wrapping at the MaterialApp level covers popups and
+      // dialogs too, not just the routed pages.
+      builder: (context, child) => FluidTypeScale(child: child ?? const SizedBox.shrink()),
       routerConfig: _router,
     );
   }

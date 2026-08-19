@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import '../general/type_scale.dart';
+
+import '../general/micro_animations.dart';
+import '../general/reveal_on_scroll.dart';
 
 class DisciplineCardData {
     final String imageAsset;
@@ -16,17 +20,17 @@ class DisciplineShowcaseSection extends StatelessWidget {
     DisciplineCardData(
       imageAsset: 'lib/assets/tandarts.jpg',
       title: 'Tandartsen',
-      items: ['Compleet patiëntendossier', 'Gebitsregistratie & PPS', 'Declaraties en röntgenkoppelingen'],
+      items: ['Uitgebreide visuele Status Praesens', 'Gebitsregistratie & PPS', 'Röntgenkoppelingen en DICOM inzage'],
     ),
     DisciplineCardData(
       imageAsset: 'lib/assets/mondhygienist.jpg',
       title: 'Mondhygiënist',
-      items: ['Parodontologie', 'Pocketregistratie', 'Overzichtelijke patiëntkaarten'],
+      items: ['Parodontologie', 'Pocketregistratie', 'Overzichtelijke, instelbare patiëntkaarten'],
     ),
     DisciplineCardData(
       imageAsset: 'lib/assets/tandprotheticus.jpg',
       title: 'Tandprotheticus',
-      items: ['Prothetische behandelingen', 'Declaraties', 'Patiëntoverzicht'],
+      items: ['Visueel overzicht', 'Gemakkelijk declareren', 'Gemakkelijk patiëntoverzicht'],
     ),
     DisciplineCardData(
       imageAsset: 'lib/assets/tandtechnicus.jpg',
@@ -54,10 +58,10 @@ class DisciplineShowcaseSection extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
+          Text(
             'Eén softwarepakket voor\niedere discipline',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white, height: 1.3),
+            style: TextStyle(fontSize: AppFont.h2(context), fontWeight: FontWeight.bold, color: Colors.white, height: 1.3),
           ),
           const SizedBox(height: 12),
           const Text(
@@ -74,7 +78,8 @@ class DisciplineShowcaseSection extends StatelessWidget {
             children: [for (final data in _cards) DisciplineCard(data: data)],
           ),
           const SizedBox(height: 32),
-          OutlinedButton(
+          HoverScale(
+            child: OutlinedButton(
             onPressed: onViewFeaturesPressed,
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.white,
@@ -89,6 +94,7 @@ class DisciplineShowcaseSection extends StatelessWidget {
                 SizedBox(width: 8),
                 Icon(Icons.arrow_forward, size: 16, color: Colors.white),
               ],
+            ),
             ),
           ),
         ],
@@ -105,7 +111,10 @@ class DisciplineCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool largeScreen = MediaQuery.of(context).size.width > 2000 ? true : false;
-    return SizedBox(
+    return HoverLift(
+      lift: 4,
+      borderRadius: 16,
+      child: SizedBox(
       width: largeScreen ? 440 : 220,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -141,6 +150,7 @@ class DisciplineCard extends StatelessWidget {
               ),
             ),
         ],
+      ),
       ),
     );
   }

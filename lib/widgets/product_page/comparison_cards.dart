@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import '../general/type_scale.dart';
+import '../general/content_container.dart';
+import 'package:go_router/go_router.dart';
 
 import '../general/block_container.dart';
+import '../general/micro_animations.dart';
+import '../general/reveal_on_scroll.dart';
 
 
 class ComparisonCards extends StatelessWidget {
@@ -28,33 +33,37 @@ class ComparisonCards extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  "Werk lokaal of in de cloud",
-                  style: TextStyle(
-                    fontSize: isMobile ? 24 : 32,
-                    fontWeight: FontWeight.bold,
-                    color: darkTeal,
+                RevealOnScroll(
+                  child: Text(
+                    "Werk lokaal of in de cloud",
+                    style: TextStyle(
+                      fontSize: isMobile ? 24 : 32,
+                      fontWeight: FontWeight.bold,
+                      color: darkTeal,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 500),
-                  child: Text(
-                    "Met Odontium kiest u zelf hoe u wilt werken. Of u nu volledige controle wilt over uw eigen omgeving of liever kiest voor het gemak van onze cloud: beide mogelijkheden zijn beschikbaar.",
-                    style: TextStyle(
-                      fontSize: isMobile ? 13 : 14,
-                      height: 1.4,
-                      color: subtextColor,
+                RevealOnScroll(
+                  delay: const Duration(milliseconds: 100),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 500),
+                    child: Text(
+                      "Met Odontium kiest u zelf hoe u wilt werken. Of u nu volledige controle wilt over uw eigen omgeving of liever kiest voor het gemak van onze cloud: beide mogelijkheden zijn beschikbaar.",
+                      style: TextStyle(
+                        fontSize: isMobile ? 13 : 14,
+                        height: 1.4,
+                        color: subtextColor,
+                      ),
                     ),
                   ),
                 ),
                 SizedBox(height: isMobile ? 24 : 40),
                 Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 900),
+                  child: ContentContainer(
                     child: isMobile
-                        ? _buildMobileLayout()
-                        : _buildDesktopLayout(),
+                        ? _buildMobileLayout(context)
+                        : _buildDesktopLayout(context),
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -77,7 +86,41 @@ class ComparisonCards extends StatelessWidget {
     );
   }
 
-  Widget _buildDesktopLayout() {
+  /// The "OF" badge between the two options gives a periodic wiggle so the
+  /// choice itself draws a little attention.
+  Widget _buildOfBadge() {
+    return Wiggle(
+      angle: 0.12,
+      interval: const Duration(seconds: 5),
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white,
+          border: Border.all(
+            color: Colors.grey.shade300,
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 8, offset: const Offset(0, 3)),
+          ],
+        ),
+        child: const Center(
+          child: Text(
+            "OF",
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: subtextColor,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDesktopLayout(BuildContext context) {
     return IntrinsicHeight(
       child: Stack(
         alignment: Alignment.center,
@@ -85,9 +128,20 @@ class ComparisonCards extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Expanded(child: _buildCloudCard()),
+              Expanded(
+                child: RevealOnScroll(
+                  offset: const Offset(-40, 0),
+                  child: _buildCloudCard(context),
+                ),
+              ),
               const SizedBox(width: 60),
-              Expanded(child: _buildLocalCard()),
+              Expanded(
+                child: RevealOnScroll(
+                  delay: const Duration(milliseconds: 150),
+                  offset: const Offset(40, 0),
+                  child: _buildLocalCard(context),
+                ),
+              ),
             ],
           ),
           Positioned.fill(
@@ -101,28 +155,7 @@ class ComparisonCards extends StatelessWidget {
                       color: Colors.grey.shade300,
                     ),
                   ),
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                      border: Border.all(
-                        color: Colors.grey.shade300,
-                        width: 1,
-                      ),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        "OF",
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: subtextColor,
-                        ),
-                      ),
-                    ),
-                  ),
+                  _buildOfBadge(),
                   Expanded(
                     child: Container(
                       width: 1,
@@ -138,10 +171,10 @@ class ComparisonCards extends StatelessWidget {
     );
   }
 
-  Widget _buildMobileLayout() {
+  Widget _buildMobileLayout(BuildContext context) {
     return Column(
       children: [
-        _buildCloudCard(),
+        RevealOnScroll(child: _buildCloudCard(context)),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 20.0),
           child: Row(
@@ -149,40 +182,20 @@ class ComparisonCards extends StatelessWidget {
               Expanded(child: Container(height: 1, color: Colors.grey.shade300)),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white,
-                    border: Border.all(
-                      color: Colors.grey.shade300,
-                      width: 1,
-                    ),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      "OF",
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: subtextColor,
-                      ),
-                    ),
-                  ),
-                ),
+                child: _buildOfBadge(),
               ),
               Expanded(child: Container(height: 1, color: Colors.grey.shade300)),
             ],
           ),
         ),
-        _buildLocalCard(),
+        RevealOnScroll(child: _buildLocalCard(context)),
       ],
     );
   }
 
-  Widget _buildCloudCard() {
+  Widget _buildCloudCard(BuildContext context) {
     return _buildOptionCard(
+      context: context,
       icon: Icons.cloud_outlined,
       title: "Werken in de cloud",
       description:
@@ -190,20 +203,21 @@ class ComparisonCards extends StatelessWidget {
       bulletPoints: const [
         "Automatische back-ups",
         "99,9% uptime",
-        "Werken vanaf iedere locatie",
+        "Werken vanaf iedere locatie in Nederland",
         "Altijd de nieuwste updates",
-        "Veilige opslag in ons eigen datacentrum",
+        "Veilige, versleutelde opslag in ons eigen datacentrum",
       ],
       buttonText: "Kies voor cloud",
       statValue: "99,9%",
       statLabel: "Gemiddelde uptime",
       filled: true,
-      onTap: () {},
+      onTap: () => context.go('/contact'),
     );
   }
 
-  Widget _buildLocalCard() {
+  Widget _buildLocalCard(BuildContext context) {
     return _buildOptionCard(
+      context: context,
       icon: Icons.dns_outlined,
       title: "Lokaal werken",
       description:
@@ -219,11 +233,12 @@ class ComparisonCards extends StatelessWidget {
       statValue: "100%",
       statLabel: "controle over uw eigen omgeving",
       filled: false,
-      onTap: () {},
+      onTap: () => context.go('/contact'),
     );
   }
 
   Widget _buildOptionCard({
+    required BuildContext context,
     required IconData icon,
     required String title,
     required String description,
@@ -234,7 +249,10 @@ class ComparisonCards extends StatelessWidget {
     required bool filled,
     required VoidCallback onTap,
   }) {
-    return Container(
+    return HoverLift(
+      lift: 6,
+      borderRadius: 20,
+      child: Container(
       padding: const EdgeInsets.all(32.0),
       decoration: BoxDecoration(
         color: cardBg,
@@ -243,23 +261,26 @@ class ComparisonCards extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: teal,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(
-              icon,
-              color: Colors.white,
-              size: 28,
+          Wiggle(
+            interval: const Duration(seconds: 7),
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: teal,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                icon,
+                color: Colors.white,
+                size: 28,
+              ),
             ),
           ),
           const SizedBox(height: 20),
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 22,
+            style: TextStyle(
+              fontSize: AppFont.h3(context),
               fontWeight: FontWeight.bold,
               color: darkTeal,
             ),
@@ -370,6 +391,7 @@ class ComparisonCards extends StatelessWidget {
             ],
           ),
         ],
+      ),
       ),
     );
   }

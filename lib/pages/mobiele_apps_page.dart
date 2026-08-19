@@ -1,8 +1,13 @@
+import '../widgets/general/auto_scroll_view.dart';
 import 'package:flutter/material.dart';
-import 'package:odontium_website/widgets/general/footer.dart';
-
+import '../widgets/general/type_scale.dart';
+import '../widgets/general/content_container.dart';
+import 'package:go_router/go_router.dart';
+import 'package:Odontium/widgets/general/footer.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../widgets/general/block_container.dart';
 import '../widgets/general/demo_cta_banner.dart';
+import '../widgets/general/micro_animations.dart';
 import '../widgets/general/responsive.dart';
 
 const _darkTeal = Color(0xFF0F3B3F);
@@ -23,34 +28,40 @@ class MobieleAppsPage extends StatelessWidget {
           "van belangrijke meldingen.",
       bullets: ["Chat met collega's", "Taken bekijken", "Reminders ontvangen"],
       imagePath: "lib/assets/app_odontium_login.png",
+      playUrl: "",
+      appUrl: "",
       imageOnLeft: true,
     ),
     _AppShowcase(
-      badgeLabel: "TSE MOBILE",
+      badgeLabel: "TSE Mobile",
       accentColor: _teal,
       title: "Altijd voorbereid, onderweg of thuis",
       description: "Bekijk onderweg of thuis uw agenda en patiëntgegevens zodat u altijd voorbereid bent.",
       bullets: ["Agenda altijd beschikbaar", "Patiëntgegevens raadplegen", "Direct contact opnemen"],
-      imagePath: "lib/assets/app_tse_agenda.png",
+      imagePath: "lib/assets/tse_mobile.png",
       imageOnLeft: false,
+      playUrl: "https://play.google.com/store/apps/details?id=com.TSE.Mobile&hl=nl",
+      appUrl: "https://apps.apple.com/nl/app/tse-mobile/id1204833179",
     ),
     _AppShowcase(
-      badgeLabel: "TSE MOBILE",
+      badgeLabel: "TSE Camera",
       accentColor: Color(0xFFB39DDB),
       title: "Foto's, direct op de juiste kaart",
       description:
           "Maak foto's met uw smartphone en upload ze direct via een QR-code naar de juiste "
           "patiëntenkaart in Odontium.",
       bullets: ["Direct uploaden", "Geen kabels nodig", "Altijd gekoppeld aan de juiste patiënt"],
-      imagePath: "lib/assets/app_tse_camera.png",
+      imagePath: "lib/assets/tse_camera.png",
       imageOnLeft: true,
+      playUrl: "https://play.google.com/store/apps/details?id=com.TSE.Camera&hl=nl",
+      appUrl: "https://apps.apple.com/nl/app/tse-camera/id1186675650",
     ),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
+      body: AutoScrollView(
         child: Column(
           children: [
             const SizedBox(height: 56),
@@ -62,7 +73,7 @@ class MobieleAppsPage extends StatelessWidget {
                     "Eén softwareplatform.\nDrie slimme apps.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: responsiveValue(context, desktop: 34, mobile: 26),
+                      fontSize: AppFont.h1(context),
                       fontWeight: FontWeight.bold,
                       color: _darkTeal,
                       height: 1.3,
@@ -81,7 +92,7 @@ class MobieleAppsPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () => context.go('/contact'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _teal,
                       foregroundColor: Colors.white,
@@ -109,8 +120,7 @@ class MobieleAppsPage extends StatelessWidget {
             BlockContainer(
               screenWidthFactor: 1,
               child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 900),
+                child: ContentContainer(
                   child: Column(
                     children: [
                       for (var i = 0; i < _showcases.length; i++) ...[
@@ -172,6 +182,8 @@ class _AppShowcase {
   final List<String> bullets;
   final String imagePath;
   final bool imageOnLeft;
+  final String playUrl;
+  final String appUrl;
 
   const _AppShowcase({
     required this.badgeLabel,
@@ -181,7 +193,8 @@ class _AppShowcase {
     required this.description,
     required this.bullets,
     required this.imagePath,
-    required this.imageOnLeft,
+    required this.imageOnLeft, required this.playUrl, required this.appUrl,
+
   });
 }
 
@@ -192,7 +205,12 @@ class _AppShowcaseRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final phone = _PhonePlaceholder(imagePath: data.imagePath, accentColor: data.accentColor);
+    final phone = Floating(
+      amplitude: 8,
+      duration: const Duration(milliseconds: 3800),
+      phase: data.imageOnLeft ? 0.0 : 0.5,
+      child: _PhonePlaceholder(imagePath: data.imagePath, accentColor: data.accentColor),
+    );
     final contentColumn = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -221,7 +239,7 @@ class _AppShowcaseRow extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             data.title,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: _darkTeal),
+            style: TextStyle(fontSize: AppFont.h3(context), fontWeight: FontWeight.bold, color: _darkTeal),
           ),
           const SizedBox(height: 8),
           Text(
@@ -244,14 +262,31 @@ class _AppShowcaseRow extends StatelessWidget {
               ),
             ),
           const SizedBox(height: 16),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: const [
-              _StoreBadge(icon: Icons.play_arrow, line1: "Available on the", line2: "Google Play"),
-              SizedBox(width: 10),
-              _StoreBadge(icon: Icons.phone_iphone, line1: "Download on the", line2: "App Store"),
-            ],
-          ),
+          // Only render badges that actually have a store URL; the Odontium
+          // app isn't published yet, so it gets a "coming soon" chip instead.
+          if (data.playUrl.isEmpty && data.appUrl.isEmpty)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: _teal.withValues(alpha: 0.10),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Text(
+                "Binnenkort beschikbaar in de app stores",
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: _darkTeal),
+              ),
+            )
+          else
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                if (data.playUrl.isNotEmpty)
+                  _StoreBadge(icon: Icons.play_arrow, line1: "Available on the", line2: "Google Play", url: data.playUrl),
+                if (data.appUrl.isNotEmpty)
+                  _StoreBadge(icon: Icons.phone_iphone, line1: "Download on the", line2: "App Store", url: data.appUrl),
+              ],
+            ),
         ],
       );
 
@@ -268,11 +303,14 @@ class _AppShowcaseRow extends StatelessWidget {
 
     final content = Expanded(child: contentColumn);
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: data.imageOnLeft
-          ? [phone, const SizedBox(width: 48), content]
-          : [content, const SizedBox(width: 48), phone],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 128.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: data.imageOnLeft
+            ? [phone, const SizedBox(width: 48), content]
+            : [content, const SizedBox(width: 48), phone],
+      ),
     );
   }
 }
@@ -281,31 +319,39 @@ class _StoreBadge extends StatelessWidget {
   final IconData icon;
   final String line1;
   final String line2;
+  final String url;
 
-  const _StoreBadge({required this.icon, required this.line1, required this.line2});
+  const _StoreBadge({required this.icon, required this.line1, required this.line2, required this.url});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFFDADADA)),
-        borderRadius: BorderRadius.circular(8),
+    return HoverScale(
+      scale: 1.07,
+      child: InkWell(
+      onTap: () => launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication),
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          border: Border.all(color: const Color(0xFFDADADA)),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 18, color: _darkTeal),
+            const SizedBox(width: 6),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(line1, style: const TextStyle(fontSize: 8, color: _subtext)),
+                Text(line2, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _darkTeal)),
+              ],
+            ),
+          ],
+        ),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 18, color: _darkTeal),
-          const SizedBox(width: 6),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(line1, style: const TextStyle(fontSize: 8, color: _subtext)),
-              Text(line2, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _darkTeal)),
-            ],
-          ),
-        ],
       ),
     );
   }
@@ -343,23 +389,46 @@ class _PhonePlaceholder extends StatelessWidget {
               ),
             ),
           ),
-          Image.asset(
-            imagePath,
-            width: 190 * scale,
-            fit: BoxFit.contain,
-            errorBuilder: (context, error, stackTrace) => Container(
-              width: 180 * scale,
-              height: 300 * scale,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(28 * scale),
-                border: Border.all(color: const Color(0xFFDADADA), width: 2),
-                boxShadow: [
-                  BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 12, offset: const Offset(0, 6)),
-                ],
+          // Image.asset does no clipping of its own, so the rounded corners
+          // only ever existed on the errorBuilder placeholder below and
+          // disappeared as soon as the real screenshots were added.
+          //
+          // Sized by *height* rather than width, for two reasons. The clip
+          // needs the widget box to be exactly the painted bitmap: giving both
+          // a width and a height with BoxFit.contain letterboxes the bitmap
+          // inside a wider box, so the radius would round transparent margin
+          // instead of the image. And at width 190 these render 421 and 343
+          // tall against a 320 frame, so the Stack (which clips by default)
+          // was already cropping their tops and bottoms.
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(28 * scale),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.10),
+                  blurRadius: 14,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(28 * scale),
+              child: Image.asset(
+                imagePath,
+                height: 300 * scale,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  width: 180 * scale,
+                  height: 300 * scale,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(28 * scale),
+                    border: Border.all(color: const Color(0xFFDADADA), width: 2),
+                  ),
+                  alignment: Alignment.center,
+                  child: Icon(Icons.smartphone_outlined, size: 48 * scale, color: accentColor),
+                ),
               ),
-              alignment: Alignment.center,
-              child: Icon(Icons.smartphone_outlined, size: 48 * scale, color: accentColor),
             ),
           ),
         ],

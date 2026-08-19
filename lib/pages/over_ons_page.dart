@@ -1,10 +1,16 @@
+import '../widgets/general/auto_scroll_view.dart';
 import 'package:flutter/material.dart';
+import '../widgets/general/type_scale.dart';
+import '../widgets/general/content_container.dart';
+import 'package:go_router/go_router.dart';
 
 import '../widgets/general/block_container.dart';
 import '../widgets/general/demo_cta_banner.dart';
 import '../widgets/general/footer.dart';
 import '../widgets/general/hover_arrow_button.dart';
+import '../widgets/general/micro_animations.dart';
 import '../widgets/general/responsive.dart';
+import '../widgets/general/reveal_on_scroll.dart';
 
 const _darkTeal = Color(0xFF0F3B3F);
 const _teal = Color(0xFF17A8A6);
@@ -18,18 +24,25 @@ class OverOnsPage extends StatelessWidget {
     _StatItem(
       icon: Icons.history,
       value: "35+",
+      countTo: 35,
+      countSuffix: "+",
       label: "JAAR ERVARING",
       description: "Al meer dan 35 jaar ontwikkelen wij betrouwbare software voor de mondzorg.",
     ),
     _StatItem(
       icon: Icons.local_hospital_outlined,
       value: "500+",
+      countTo: 500,
+      countSuffix: "+",
       label: "PRAKTIJKEN",
       description: "Dagelijks vertrouwen honderden praktijken op de software van TSE.",
     ),
     _StatItem(
       icon: Icons.monitor_heart_outlined,
       value: "99.99%",
+      countTo: 99.99,
+      countDecimals: 2,
+      countSuffix: "%",
       label: "UPTIME",
       description: "Betrouwbare cloudomgeving met maximale beschikbaarheid.",
     ),
@@ -45,6 +58,8 @@ class OverOnsPage extends StatelessWidget {
     _StatItem(
       icon: Icons.arrow_upward,
       value: "2×",
+      countTo: 2,
+      countSuffix: "×",
       label: "GROTE UPDATES PER JAAR",
       description: "Nieuwe functionaliteiten en verbeteringen houden Odontium continu up-to-date.",
     ),
@@ -63,18 +78,22 @@ class OverOnsPage extends StatelessWidget {
     _StatItem(
       icon: Icons.shield_outlined,
       value: "256-BIT",
+      countTo: 256,
+      countSuffix: "-BIT",
       label: "AES-BEVEILIGING",
       description: "Uw patiëntgegevens worden veilig opgeslagen en beschermd.",
     ),
   ];
 
   static const List<_TeamMemberData> _teamMembers = [
-    _TeamMemberData(imagePath: "lib/assets/team_member_1.png", name: "Koen Rikkerink", role: "Producteigenaar"),
-    _TeamMemberData(imagePath: "lib/assets/team_member_2.png", name: "Koen Rikkerink", role: "Producteigenaar"),
-    _TeamMemberData(imagePath: "lib/assets/team_member_3.png", name: "Koen Rikkerink", role: "Producteigenaar"),
-    _TeamMemberData(imagePath: "lib/assets/team_member_4.png", name: "Koen Rikkerink", role: "Producteigenaar"),
-    _TeamMemberData(imagePath: "lib/assets/team_member_5.png", name: "Koen Rikkerink", role: "Producteigenaar"),
-    _TeamMemberData(imagePath: "lib/assets/team_member_6.png", name: "Koen Rikkerink", role: "Producteigenaar"),
+    _TeamMemberData(imagePath: "lib/assets/team_member_1.png", name: "Frans Rikkerink", role: "CEO"),
+    _TeamMemberData(imagePath: "lib/assets/koen.jpg", name: "Koen Rikkerink", role: "Producteigenaar"),
+    _TeamMemberData(imagePath: "lib/assets/wouter.jpg", name: "Wouter Pleijsier", role: "Full Stack Developer"),
+    _TeamMemberData(imagePath: "lib/assets/pim.jpg", name: "Pim Fentsahm", role: "Machine Learning Engineer"),
+    _TeamMemberData(imagePath: "lib/assets/nikoo.png", name: "Nikoo Abedian", role: "Marketing/Design"),
+    _TeamMemberData(imagePath: "lib/assets/team_member_5.png", name: "Jan Schepers", role: "Systeembeheer"),
+    _TeamMemberData(imagePath: "lib/assets/team_member_6.png", name: "Anibor Van Keulen", role: "Tandarts"),
+    _TeamMemberData(imagePath: "lib/assets/team_member_6.png", name: "Saskia Dijkstra", role: "Tandarts"),
   ];
 
   static const List<_SupportInfoCard> _supportInfoCards = [
@@ -103,24 +122,28 @@ class OverOnsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
+      body: AutoScrollView(
         child: Column(
           children: [
             const SizedBox(height: 56),
             BlockContainer(
               screenWidthFactor: 1,
-              child: Column(
+              child: RevealOnScroll(
+                child: Column(
                 children: [
-                  Image.asset(
-                    "lib/assets/tse_logo.png",
-                    height: 70,
-                    errorBuilder: (context, error, stackTrace) => const _TseWordmark(),
+                  Floating(
+                    amplitude: 4,
+                    child: Image.asset(
+                      "lib/assets/TSE_LOGO_WIDE.png",
+                      height: 120,
+                      errorBuilder: (context, error, stackTrace) => const _TseWordmark(),
+                    ),
                   ),
                   const SizedBox(height: 20),
-                  const Text(
+                  Text(
                     "De kracht achter Odontium",
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: _darkTeal),
+                    style: TextStyle(fontSize: AppFont.h1(context), fontWeight: FontWeight.bold, color: _darkTeal),
                   ),
                   const SizedBox(height: 16),
                   ConstrainedBox(
@@ -140,40 +163,51 @@ class OverOnsPage extends StatelessWidget {
                     spacing: 16,
                     runSpacing: 12,
                     children: [
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _teal,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                          elevation: 0,
-                        ),
-                        child: const Text(
-                          "Plan een demo",
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                      HoverScale(
+                        child: PulseGlow(
+                          borderRadius: 20,
+                          child: ElevatedButton(
+                            onPressed: () => context.go('/contact'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: _teal,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                              elevation: 0,
+                            ),
+                            child: const Text(
+                              "Plan een demo",
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                            ),
+                          ),
                         ),
                       ),
-                      OutlinedButton(
-                        onPressed: () {},
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: _darkTeal,
-                          side: const BorderSide(color: Color(0xFFDADADA)),
-                          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                        ),
-                        child: const Text(
-                          "Neem contact op",
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                      HoverScale(
+                        child: OutlinedButton(
+                          onPressed: () => context.go('/contact'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: _darkTeal,
+                            side: const BorderSide(color: Color(0xFFDADADA)),
+                            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                          ),
+                          child: const Text(
+                            "Neem contact op",
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ],
+                ),
               ),
             ),
             BlockContainer(
               screenWidthFactor: 1,
+              // Feather the seam with the light hero section above so the
+              // blue doesn't start as a hard horizontal line.
+              softTopEdge: const Color(0xFFF8F9FB),
               gradient: const LinearGradient(
                 colors: [Color.fromRGBO(77, 132, 152, 1), Colors.white],
                 begin: Alignment.topCenter,
@@ -181,77 +215,78 @@ class OverOnsPage extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  const Text(
-                    "Software ontwikkeld met kennis\nvan de praktijk",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white, height: 1.3),
+                  RevealOnScroll(
+                    child: Text(
+                      "Software ontwikkeld met kennis\nvan de praktijk",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: AppFont.h2(context), fontWeight: FontWeight.bold, color: Colors.white, height: 1.3),
+                    ),
                   ),
                   const SizedBox(height: 16),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 700),
-                    child: const Text(
-                      "Bij TSE geloven we dat goede software begint met luisteren. Daarom ontwikkelen "
-                      "we Odontium samen met de mensen die er iedere dag mee werken. Door onze "
-                      "jarenlange ervaring en nauwe samenwerking met mondzorgpraktijken blijft de "
-                      "software zich ontwikkelen en aansluiten op de praktijk van vandaag én morgen.",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 14, color: Colors.white70, height: 1.5),
+                  RevealOnScroll(
+                    delay: const Duration(milliseconds: 100),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 700),
+                      child: const Text(
+                        "Bij TSE geloven we dat goede software begint met luisteren. Daarom ontwikkelen "
+                        "we Odontium samen met de mensen die er iedere dag mee werken. Door onze "
+                        "jarenlange ervaring en nauwe samenwerking met mondzorgpraktijken blijft de "
+                        "software zich ontwikkelen en aansluiten op de praktijk van vandaag én morgen.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 14, color: Colors.white70, height: 1.5),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 40),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 1000),
-                    child: isMobile(context)
-                        ? Column(
-                            children: [
-                              for (var col = 0; col < 4; col++) ...[
-                                if (col != 0)
-                                  const Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 24),
-                                    child: Divider(height: 1, color: Color(0xFFD8D8D8)),
-                                  ),
-                                _StatBlock(item: _statsRow1[col]),
-                                const SizedBox(height: 32),
-                                _StatBlock(item: _statsRow2[col]),
-                              ],
-                            ],
-                          )
-                        : IntrinsicHeight(
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                for (var col = 0; col < 4; col++) ...[
-                                  if (col != 0)
-                                    const Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: 16),
-                                      child: VerticalDivider(width: 1, color: Color(0xFFD8D8D8)),
-                                    ),
-                                  Expanded(
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        _StatBlock(item: _statsRow1[col]),
-                                        const SizedBox(height: 32),
-                                        _StatBlock(item: _statsRow2[col]),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ],
+                  // 4 / 2 / 1-column card grid; tiles wave in with a small
+                  // stagger and their numbers count up on first sight.
+                  ContentContainer(
+                    child: Builder(
+                      builder: (context) {
+                        final columns = responsiveValue(context, desktop: 4, tablet: 2, mobile: 1);
+                        const items = [..._statsRow1, ..._statsRow2];
+                        final rows = <Widget>[];
+                        for (var i = 0; i < items.length; i += columns) {
+                          final rowItems = items.skip(i).take(columns).toList();
+                          rows.add(
+                            Padding(
+                              padding: EdgeInsets.only(bottom: i + columns >= items.length ? 0 : 16),
+                              child: IntrinsicHeight(
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    for (var c = 0; c < rowItems.length; c++) ...[
+                                      if (c != 0) const SizedBox(width: 16),
+                                      Expanded(
+                                        child: RevealOnScroll(
+                                          delay: Duration(milliseconds: (i + c) * 90),
+                                          offset: const Offset(0, 28),
+                                          child: _StatTile(item: rowItems[c]),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
                             ),
-                          ),
+                          );
+                        }
+                        return Column(children: rows);
+                      },
+                    ),
                   ),
                 ],
               ),
             ),
             BlockContainer(
+              backgroundColor: Colors.white,
               screenWidthFactor: 1,
               child: Column(
                 children: [
-                  const Text(
+                  Text(
                     "Persoonlijke ondersteuning wanneer u\ndie nodig heeft",
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: _darkTeal, height: 1.3),
+                    style: TextStyle(fontSize: AppFont.h2(context), fontWeight: FontWeight.bold, color: _darkTeal, height: 1.3),
                   ),
                   const SizedBox(height: 16),
                   ConstrainedBox(
@@ -267,8 +302,7 @@ class OverOnsPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 32),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 1000),
+                  ContentContainer(
                     child: isMobile(context)
                         ? Column(
                             children: [
@@ -297,14 +331,13 @@ class OverOnsPage extends StatelessWidget {
               backgroundColor: const Color.fromRGBO(226, 238, 245, 1),
               screenWidthFactor: 1,
               child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 1000),
+                child: ContentContainer(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         "Maak kennis met ons team",
-                        style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: _darkTeal),
+                        style: TextStyle(fontSize: AppFont.h2(context), fontWeight: FontWeight.bold, color: _darkTeal),
                       ),
                       const SizedBox(height: 12),
                       ConstrainedBox(
@@ -323,7 +356,7 @@ class OverOnsPage extends StatelessWidget {
                         runSpacing: 32,
                         children: [
                           for (final member in _teamMembers) _TeamMemberCard(data: member),
-                          HoverArrowButton(label: "Neem contact op", onPressed: () {}),
+                          HoverArrowButton(label: "Neem contact op", onPressed: () => context.go('/contact')),
                         ],
                       ),
                     ],
@@ -335,10 +368,10 @@ class OverOnsPage extends StatelessWidget {
               screenWidthFactor: 1,
               child: Column(
                 children: [
-                  const Text(
+                  Text(
                     "Wij bouwen aan de toekomst",
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: _darkTeal),
+                    style: TextStyle(fontSize: AppFont.h2(context), fontWeight: FontWeight.bold, color: _darkTeal),
                   ),
                   const SizedBox(height: 16),
                   ConstrainedBox(
@@ -353,8 +386,7 @@ class OverOnsPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 32),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 900),
+                  ContentContainer(
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(28),
                       child: Stack(
@@ -362,7 +394,7 @@ class OverOnsPage extends StatelessWidget {
                           AspectRatio(
                             aspectRatio: 16 / 9,
                             child: Image.asset(
-                              "lib/assets/tse_nieuw_gebouw.jpg",
+                              "lib/assets/nieuw_pand_render.jpg",
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) => Container(
                                 color: const Color(0xFFE0E0E0),
@@ -374,7 +406,10 @@ class OverOnsPage extends StatelessWidget {
                           Positioned(
                             top: responsiveValue(context, desktop: 28, mobile: 14),
                             right: responsiveValue(context, desktop: 28, mobile: 14),
-                            child: Transform.rotate(
+                            child: Wiggle(
+                              angle: 0.04,
+                              interval: const Duration(seconds: 4),
+                              child: Transform.rotate(
                               angle: 0.04,
                               child: Container(
                                 padding: EdgeInsets.symmetric(
@@ -422,7 +457,7 @@ class OverOnsPage extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      "Nieuwe\ngebouw",
+                                      "Nieuw\ngebouw",
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
@@ -433,6 +468,7 @@ class OverOnsPage extends StatelessWidget {
                                   ],
                                 ),
                               ),
+                            ),
                             ),
                           ),
                         ],
@@ -524,38 +560,130 @@ class _StatItem {
   final String label;
   final String description;
 
-  const _StatItem({required this.icon, required this.value, required this.label, required this.description});
+  /// When set, the value counts up from 0 to this number as the tile
+  /// scrolls into view; [value] is only the static fallback.
+  final double? countTo;
+  final int countDecimals;
+  final String countSuffix;
+
+  const _StatItem({
+    required this.icon,
+    required this.value,
+    required this.label,
+    required this.description,
+    this.countTo,
+    this.countDecimals = 0,
+    this.countSuffix = '',
+  });
 }
 
-class _StatBlock extends StatelessWidget {
+/// Frosted stat card: gradient icon badge, count-up value, teal label and
+/// description. Lifts on hover while the badge pops and the value tints teal.
+class _StatTile extends StatefulWidget {
   final _StatItem item;
 
-  const _StatBlock({required this.item});
+  const _StatTile({required this.item});
+
+  @override
+  State<_StatTile> createState() => _StatTileState();
+}
+
+class _StatTileState extends State<_StatTile> {
+  bool _hovering = false;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(item.icon, size: 22, color: _darkTeal),
-        const SizedBox(height: 10),
-        Text(
-          item.value,
-          style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.black87),
+    final item = widget.item;
+    final valueStyle = TextStyle(
+      fontSize: 26,
+      fontWeight: FontWeight.w800,
+      color: _hovering ? _teal : _darkTeal,
+      letterSpacing: -0.4,
+    );
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovering = true),
+      onExit: (_) => setState(() => _hovering = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+        transform: Matrix4.translationValues(0, _hovering ? -6 : 0, 0),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: _hovering ? 1.0 : 0.92),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: _hovering ? _teal.withValues(alpha: 0.5) : Colors.white.withValues(alpha: 0.65),
+            width: 1.2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: _hovering
+                  ? _teal.withValues(alpha: 0.28)
+                  : Colors.black.withValues(alpha: 0.08),
+              blurRadius: _hovering ? 22 : 12,
+              offset: Offset(0, _hovering ? 12 : 5),
+            ),
+          ],
         ),
-        const SizedBox(height: 4),
-        Text(
-          item.label,
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: _teal, letterSpacing: 0.4),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AnimatedScale(
+              scale: _hovering ? 1.15 : 1.0,
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOutBack,
+              child: Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [_teal, _darkTeal],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(13),
+                  boxShadow: [
+                    BoxShadow(color: _teal.withValues(alpha: 0.35), blurRadius: 10, offset: const Offset(0, 4)),
+                  ],
+                ),
+                child: Icon(item.icon, size: 21, color: Colors.white),
+              ),
+            ),
+            const SizedBox(height: 12),
+            // Numbers tick up from 0 the first time the tile is seen.
+            if (item.countTo != null)
+              AnimatedDefaultTextStyle(
+                duration: const Duration(milliseconds: 200),
+                style: valueStyle,
+                child: AnimatedCount(
+                  target: item.countTo!,
+                  decimals: item.countDecimals,
+                  suffix: item.countSuffix,
+                  textAlign: TextAlign.center,
+                ),
+              )
+            else
+              AnimatedDefaultTextStyle(
+                duration: const Duration(milliseconds: 200),
+                style: valueStyle,
+                child: Text(item.value, textAlign: TextAlign.center),
+              ),
+            const SizedBox(height: 4),
+            Text(
+              item.label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: _teal, letterSpacing: 0.4),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              item.description,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 12, color: _subtext, height: 1.4),
+            ),
+          ],
         ),
-        const SizedBox(height: 8),
-        Text(
-          item.description,
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 12, color: _subtext, height: 1.4),
-        ),
-      ],
+      ),
     );
   }
 }
@@ -575,14 +703,20 @@ class _SupportInfoCardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return HoverLift(
+      lift: 5,
+      borderRadius: 14,
+      child: Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(color: _mint, borderRadius: BorderRadius.circular(14)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(data.icon, size: 24, color: _teal),
+          Wiggle(
+            interval: const Duration(seconds: 7),
+            child: Icon(data.icon, size: 24, color: _teal),
+          ),
           const SizedBox(height: 14),
           Text(
             data.title,
@@ -594,6 +728,7 @@ class _SupportInfoCardView extends StatelessWidget {
             style: const TextStyle(fontSize: 12, color: _subtext, height: 1.4),
           ),
         ],
+      ),
       ),
     );
   }
@@ -614,7 +749,10 @@ class _TeamMemberCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return HoverLift(
+      lift: 5,
+      borderRadius: 8,
+      child: SizedBox(
       width: 150,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -645,6 +783,7 @@ class _TeamMemberCard extends StatelessWidget {
             style: const TextStyle(fontSize: 12, color: _subtext, fontStyle: FontStyle.italic),
           ),
         ],
+      ),
       ),
     );
   }

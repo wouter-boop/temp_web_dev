@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../general/micro_animations.dart';
+
 enum ClusterSide { left, right }
 
 class _ClusterPiece {
@@ -44,14 +46,21 @@ class ClusterDecoration extends StatelessWidget {
           return Stack(
             clipBehavior: Clip.none,
             children: [
-              for (final piece in _pieces)
+              for (var i = 0; i < _pieces.length; i++)
                 Positioned(
-                  top: (piece.topFraction * constraints.maxHeight + verticalOffset).clamp(0.0, maxTop),
-                  left: side == ClusterSide.left ? -piece.overhang * size : null,
-                  right: side == ClusterSide.right ? -piece.overhang * size : null,
+                  top: (_pieces[i].topFraction * constraints.maxHeight + verticalOffset).clamp(0.0, maxTop),
+                  left: side == ClusterSide.left ? -_pieces[i].overhang * size : null,
+                  right: side == ClusterSide.right ? -_pieces[i].overhang * size : null,
                   width: size,
                   height: size,
-                  child: Image.asset(piece.asset, fit: BoxFit.fill),
+                  // Each square drifts on its own phase for a subtle
+                  // parallax-like ambient motion.
+                  child: Floating(
+                    amplitude: 8,
+                    duration: Duration(milliseconds: 3600 + i * 500),
+                    phase: i / _pieces.length,
+                    child: Image.asset(_pieces[i].asset, fit: BoxFit.fill),
+                  ),
                 ),
             ],
           );

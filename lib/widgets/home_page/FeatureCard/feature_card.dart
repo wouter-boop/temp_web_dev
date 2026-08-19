@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../general/type_scale.dart';
+
+import '../../general/micro_animations.dart';
+import '../../general/reveal_on_scroll.dart';
+
 const _headingNavy = Color(0xFF16324A);
 class FeatureCardData {
   final String title;
@@ -44,16 +49,16 @@ class FeatureHighlightsSection extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          RichText(
-            textAlign: TextAlign.center,
-            text: const TextSpan(
-              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: _headingNavy, height: 1.3),
+          Text.rich(
+            TextSpan(
+              style: TextStyle(fontSize: AppFont.h2(context), fontWeight: FontWeight.bold, color: _headingNavy, height: 1.3),
               children: [
-                TextSpan(text: 'Wat ', style: TextStyle(fontFamily: 'Segoe UI')),
-                TextSpan(text: 'Odontium', style: TextStyle(color: Color.fromRGBO(32,156,160,1), fontWeight: FontWeight.w900, fontFamily: 'Segoe UI')),
-                TextSpan(text: ' voor\nuw praktijk betekent.', style: TextStyle(fontFamily: 'Segoe UI')),
+                TextSpan(text: 'Wat '),
+                TextSpan(text: 'Odontium', style: TextStyle(color: Color.fromRGBO(32,156,160,1), fontWeight: FontWeight.w900)),
+                TextSpan(text: ' voor\nuw praktijk betekent.'),
               ],
             ),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
           Wrap(
@@ -63,21 +68,23 @@ class FeatureHighlightsSection extends StatelessWidget {
             children: [for (final data in _cards) FeatureCard(data: data)],
           ),
           const SizedBox(height: 32),
-          OutlinedButton(
-            onPressed: onDiscoverPressed,
-            style: OutlinedButton.styleFrom(
-              foregroundColor: _headingNavy,
-              side: const BorderSide(color: _headingNavy),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-            ),
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('Ontdek Odontium', style: TextStyle(fontWeight: FontWeight.w600)),
-                SizedBox(width: 8),
-                Icon(Icons.arrow_forward, size: 16),
-              ],
+          HoverScale(
+            child: OutlinedButton(
+              onPressed: onDiscoverPressed,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: _headingNavy,
+                side: const BorderSide(color: _headingNavy),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Ontdek Odontium', style: TextStyle(fontWeight: FontWeight.w600)),
+                  SizedBox(width: 8),
+                  Icon(Icons.arrow_forward, size: 16),
+                ],
+              ),
             ),
           ),
         ],
@@ -93,7 +100,8 @@ class FeatureCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return HoverLift(
+      child: Container(
       width: 260,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -113,9 +121,10 @@ class FeatureCard extends StatelessWidget {
           Text(
             data.description,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 13, color: Colors.red, height: 1.5),
+            style: const TextStyle(fontSize: 13, color: Colors.black, height: 1.5),
           ),
         ],
+      ),
       ),
     );
   }

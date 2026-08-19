@@ -1,4 +1,4 @@
-name: odontium_website
+name: Odontium
 description: "Nieuwe 2026 website van Odontium, het mondzorgportaal."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -41,6 +41,9 @@ dependencies:
   protobuf: ^6.0.0
   http: ^1.6.0
   web: any
+  url_launcher: ^6.3.2
+  auto_scrolling: ^0.4.0
+  google_maps_flutter: ^2.18.0
 
 dev_dependencies:
   flutter_test:
@@ -83,10 +86,10 @@ flutter:
   fonts:
     - family: Segoe UI
       fonts:
-        - asset: lib/fonts/Segoe UI.ttf
-        - asset: lib/fonts/Segoe UI Bold.ttf
+        - asset: lib/fonts/Segoe-UI.ttf
+        - asset: lib/fonts/Segoe-UI-Bold.ttf
           weight: 700
-        - asset: lib/fonts/Segoe UI Italic.ttf
+        - asset: lib/fonts/Segoe-UI-Italic.ttf
           style: italic
 
   # To add custom fonts to your application, add a fonts section here,

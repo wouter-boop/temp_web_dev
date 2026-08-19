@@ -1,7 +1,11 @@
+import 'dart:async';
 import 'dart:ui'; // Required for BackdropFilter (Blur)
 import 'package:flutter/material.dart';
 
 import 'responsive.dart';
+
+/// Accent used to mark the active page in the nav dropdowns.
+const Color _accentTeal = Color(0xFF17A8A6);
 
 /// Data structure for navigation items and optional dropdown sub-items
 class NavItemData {
@@ -13,11 +17,16 @@ class NavItemData {
 
 class CustomWebHeader extends StatefulWidget {
   final int selectedIndex;
+
+  /// Index of the active dropdown item within [selectedIndex]'s sub-items,
+  /// or null when the current page isn't one of them.
+  final int? selectedSubIndex;
   final Function(int mainIndex, {int? subIndex}) onDestinationSelected;
 
   const CustomWebHeader({
     super.key,
     required this.selectedIndex,
+    this.selectedSubIndex,
     required this.onDestinationSelected,
   });
 
@@ -63,7 +72,7 @@ class _CustomWebHeaderState extends State<CustomWebHeader> {
 
   @override
   Widget build(BuildContext context) {
-    if (isMobile(context)) {
+    if (!isDesktop(context)) {
       return Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -123,6 +132,9 @@ class _CustomWebHeaderState extends State<CustomWebHeader> {
                   child: NavDropdownButton(
                     item: item,
                     isSelected: widget.selectedIndex == index,
+                    selectedSubIndex: widget.selectedIndex == index
+                        ? widget.selectedSubIndex
+                        : null,
                     onTap: () => widget.onDestinationSelected(index),
                     onSubItemTap: (subIndex) =>
                         widget.onDestinationSelected(index, subIndex: subIndex),
@@ -145,6 +157,8 @@ class _CustomWebHeaderState extends State<CustomWebHeader> {
               NavDropdownButton(
                 item: navItems[7], // "Support"
                 isSelected: widget.selectedIndex == 7,
+                selectedSubIndex:
+                    widget.selectedIndex == 7 ? widget.selectedSubIndex : null,
                 onTap: () => widget.onDestinationSelected(7),
                 onSubItemTap: (subIndex) =>
                     widget.onDestinationSelected(7, subIndex: subIndex),
@@ -190,7 +204,11 @@ class _CustomWebHeaderState extends State<CustomWebHeader> {
               IconButton(
                 onPressed: () => setState(() {
                   _menuOpen = !_menuOpen;
-                  if (!_menuOpen) _expandedSection = null;
+                  // Opening the menu reveals the section you're currently in,
+                  // so the active sub-page is visible right away.
+                  _expandedSection = _menuOpen && widget.selectedSubIndex != null
+                      ? widget.selectedIndex
+                      : null;
                 }),
                 icon: Icon(
                   _menuOpen ? Icons.close_rounded : Icons.menu_rounded,
@@ -304,16 +322,44 @@ class _CustomWebHeaderState extends State<CustomWebHeader> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 for (var subIndex = 0; subIndex < item.subItems!.length; subIndex++)
-                  InkWell(
-                    onTap: () => _selectAndClose(index, subIndex: subIndex),
-                    borderRadius: BorderRadius.circular(10),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                      child: Text(
-                        item.subItems![subIndex],
-                        style: TextStyle(fontSize: 14, color: colorScheme.onSurfaceVariant),
-                      ),
-                    ),
+                  Builder(
+                    builder: (context) {
+                      final isActiveSub =
+                          isSelected && widget.selectedSubIndex == subIndex;
+                      return InkWell(
+                        onTap: () => _selectAndClose(index, subIndex: subIndex),
+                        borderRadius: BorderRadius.circular(10),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 2),
+                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                          decoration: BoxDecoration(
+                            color: isActiveSub
+                                ? _accentTeal.withValues(alpha: 0.10)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  item.subItems![subIndex],
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight:
+                                        isActiveSub ? FontWeight.w700 : FontWeight.w400,
+                                    color: isActiveSub
+                                        ? _accentTeal
+                                        : colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ),
+                              if (isActiveSub)
+                                const Icon(Icons.check_rounded, size: 16, color: _accentTeal),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
                   ),
               ],
             ),
@@ -325,34 +371,53 @@ class _CustomWebHeaderState extends State<CustomWebHeader> {
 }
 
 // Compact Logo Widget
-class _HeaderLogo extends StatelessWidget {
+class _HeaderLogo extends StatefulWidget {
   final VoidCallback onTap;
 
   const _HeaderLogo({required this.onTap});
 
   @override
+  State<_HeaderLogo> createState() => _HeaderLogoState();
+}
+
+class _HeaderLogoState extends State<_HeaderLogo> {
+  bool _hovering = false;
+
+  @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onTap,
+      onTap: widget.onTap,
+      onHover: (hovering) => setState(() => _hovering = hovering),
       borderRadius: BorderRadius.circular(12),
       child: Padding(
         padding: const EdgeInsets.all(4.0),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              height: 36,
-              width: 36,
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: Theme.of(
-                  context,
-                ).colorScheme.primaryContainer.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Image.asset(
-                "lib/assets/Odontium.png",
-                fit: BoxFit.contain,
+            // The tooth tips its hat on hover: a small tilt + scale.
+            AnimatedRotation(
+              turns: _hovering ? -0.03 : 0,
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOutBack,
+              child: AnimatedScale(
+                scale: _hovering ? 1.12 : 1.0,
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeOutBack,
+                child: Container(
+                  height: 36,
+                  width: 36,
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primaryContainer.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Image.asset(
+                    "lib/assets/Odontium.png",
+                    fit: BoxFit.contain,
+                  ),
+                ),
               ),
             ),
             const SizedBox(width: 10),
@@ -375,6 +440,9 @@ class _HeaderLogo extends StatelessWidget {
 class NavDropdownButton extends StatefulWidget {
   final NavItemData item;
   final bool isSelected;
+
+  /// Which sub-item is the current page, so the dropdown can mark it.
+  final int? selectedSubIndex;
   final VoidCallback onTap;
   final Function(int subIndex)? onSubItemTap;
   final bool isAction;
@@ -383,6 +451,7 @@ class NavDropdownButton extends StatefulWidget {
     super.key,
     required this.item,
     required this.isSelected,
+    this.selectedSubIndex,
     required this.onTap,
     this.onSubItemTap,
     this.isAction = false,
@@ -394,6 +463,48 @@ class NavDropdownButton extends StatefulWidget {
 
 class _NavDropdownButtonState extends State<NavDropdownButton> {
   bool _isHovered = false;
+
+  final MenuController _menu = MenuController();
+
+  /// Closing is delayed so the pointer can cross the small gap between the
+  /// button and the panel (and move between panel items) without the menu
+  /// snapping shut. Any re-entry cancels the pending close.
+  static const Duration _closeGrace = Duration(milliseconds: 150);
+  Timer? _closeTimer;
+
+  void _openMenu() {
+    _closeTimer?.cancel();
+    // MenuController.open() dereferences its anchor with `!` behind nothing but
+    // an assert, and release builds strip asserts — so calling it once this
+    // widget's anchor has detached throws "Null check operator used on a null
+    // value" instead of failing an assertion. isOpen reports false while
+    // detached, so testing it alone would steer us straight into that: the
+    // mounted check is what actually keeps us out. (close() and isOpen are
+    // null-safe in the framework; open() is the only one that is not.)
+    if (!mounted || _menu.isOpen) return;
+    _menu.open();
+  }
+
+  void _toggleMenu() {
+    if (_menu.isOpen) {
+      _menu.close();
+    } else {
+      _openMenu();
+    }
+  }
+
+  void _scheduleClose() {
+    _closeTimer?.cancel();
+    _closeTimer = Timer(_closeGrace, () {
+      if (mounted && _menu.isOpen) _menu.close();
+    });
+  }
+
+  @override
+  void dispose() {
+    _closeTimer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -424,10 +535,13 @@ class _NavDropdownButtonState extends State<NavDropdownButton> {
     }
 
     // Button visual display
-    Widget buttonContent = MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      child: AnimatedContainer(
+    // The visual only. Pointer handling is attached below, because a dropdown
+    // item additionally drives the menu open on hover.
+    Widget buttonVisual = AnimatedScale(
+        scale: _isHovered ? 1.06 : 1.0,
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOutCubic,
+        child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
         padding: EdgeInsets.symmetric(
           horizontal: widget.isAction ? 22 : 14,
@@ -453,64 +567,115 @@ class _NavDropdownButtonState extends State<NavDropdownButton> {
             ),
             if (hasSubItems) ...[
               const SizedBox(width: 4),
-              Icon(
-                Icons.keyboard_arrow_down_rounded,
-                size: 18,
-                color: getTextColor(),
+              AnimatedRotation(
+                turns: _isHovered ? 0.5 : 0,
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeOutCubic,
+                child: Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  size: 18,
+                  color: getTextColor(),
+                ),
               ),
             ],
           ],
         ),
-      ),
+        ),
     );
 
     // If there are no dropdown sub-items, return standard InkWell tap behavior
     if (!hasSubItems) {
-      return InkWell(
-        onTap: widget.onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: buttonContent,
+      return MouseRegion(
+        onEnter: (_) => setState(() => _isHovered = true),
+        onExit: (_) => setState(() => _isHovered = false),
+        child: InkWell(
+          onTap: widget.onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: buttonVisual,
+        ),
       );
     }
 
-    // Wrap with PopupMenuButton for sub-item menu dropdown
-    return Theme(
-      data: Theme.of(context).copyWith(
-        popupMenuTheme: PopupMenuThemeData(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-          elevation: 8,
-          color: colorScheme.surface,
+    // Sub-items open on hover via MenuAnchor. PopupMenuButton cannot do this:
+    // it only opens on tap and pushes a modal route whose barrier would eat the
+    // hover events for the rest of the bar. MenuAnchor has no barrier and can
+    // be driven from a MenuController, so the pointer can move from the button
+    // into the panel and back out again naturally.
+    return MenuAnchor(
+      controller: _menu,
+      alignmentOffset: const Offset(0, 6),
+      style: MenuStyle(
+        elevation: const WidgetStatePropertyAll(8),
+        backgroundColor: WidgetStatePropertyAll(colorScheme.surface),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
+        padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 6)),
       ),
-      child: PopupMenuButton<int>(
-        offset: const Offset(0, 48),
-        // Drops down right below header
-        tooltip: '',
-        onSelected: (subIndex) {
-          if (widget.onSubItemTap != null) {
-            widget.onSubItemTap!(subIndex);
-          }
-        },
-        itemBuilder: (context) {
-          return widget.item.subItems!.asMap().entries.map((entry) {
-            return PopupMenuItem<int>(
-              value: entry.key,
-              height: 40,
-              child: Text(
-                entry.value,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: colorScheme.onSurface,
-                ),
+      builder: (context, controller, _) {
+        return MouseRegion(
+          onEnter: (_) {
+            setState(() => _isHovered = true);
+            _openMenu();
+          },
+          onExit: (_) {
+            setState(() => _isHovered = false);
+            _scheduleClose();
+          },
+          child: InkWell(
+            // Tapping still toggles, so a touch device at desktop width (an
+            // iPad in landscape, say) can still reach the sub-items.
+            onTap: _toggleMenu,
+            borderRadius: BorderRadius.circular(12),
+            child: buttonVisual,
+          ),
+        );
+      },
+      menuChildren: widget.item.subItems!.asMap().entries.map((entry) {
+        final isActiveSub = widget.selectedSubIndex == entry.key;
+        return MouseRegion(
+          // Hovering the panel only *cancels* the pending close — it must never
+          // call open(). These items live in an Overlay, a separate subtree from
+          // the anchor, so they can outlive it briefly during teardown; opening
+          // from here would be the one case the mounted check in _openMenu
+          // cannot catch. They are only ever visible while the menu is already
+          // open, so cancelling is all that is wanted.
+          onEnter: (_) => _closeTimer?.cancel(),
+          onExit: (_) => _scheduleClose(),
+          child: MenuItemButton(
+            onPressed: () => widget.onSubItemTap?.call(entry.key),
+            style: const ButtonStyle(
+              padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 8)),
+            ),
+            child: Container(
+              width: 200,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              decoration: BoxDecoration(
+                color: isActiveSub ? _accentTeal.withValues(alpha: 0.10) : Colors.transparent,
+                borderRadius: BorderRadius.circular(8),
               ),
-            );
-          }).toList();
-        },
-        child: buttonContent,
-      ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      entry.value,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: isActiveSub ? FontWeight.w700 : FontWeight.w500,
+                        color: isActiveSub ? _accentTeal : colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                  if (isActiveSub) ...[
+                    const SizedBox(width: 8),
+                    const Icon(Icons.check_rounded, size: 15, color: _accentTeal),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 }

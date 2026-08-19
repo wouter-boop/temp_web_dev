@@ -1,6 +1,9 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'general/type_scale.dart';
+
+import 'general/micro_animations.dart';
 
 const _compactBreakpoint = 800.0;
 
@@ -80,7 +83,7 @@ class OverstapSection extends StatelessWidget {
   static const _supportFeatures = [
     SupportFeatureData(
       icon: Icons.call_outlined,
-      title: 'Telephonische support',
+      title: 'Telefonische support',
       description:
           'Bel 053 - 477 77 86 en u krijgt direct iemand aan de lijn die u verder kan '
           'helpen — geen keuzemenu, geen wachtrij.',
@@ -117,11 +120,11 @@ class OverstapSection extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          RichText(
-            textAlign: TextAlign.center,
-            text: TextSpan(
+          // Text.rich (unlike RichText) inherits the theme's Segoe UI.
+          Text.rich(
+            TextSpan(
               style: TextStyle(
-                fontSize: 30,
+                fontSize: AppFont.h2(context),
                 fontWeight: FontWeight.bold,
                 color: Colors.blueGrey.shade900,
                 height: 1.35,
@@ -134,6 +137,7 @@ class OverstapSection extends StatelessWidget {
                 ),
               ],
             ),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 20),
           ConstrainedBox(
@@ -151,13 +155,18 @@ class OverstapSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 48),
-          Container(width: MediaQuery.of(context).size.width*0.6, child: _ProcessSteps(steps: _steps)),
+          // On mobile the 0.6 width factor left an unusably narrow column;
+          // use the full available width there and only narrow on desktop.
+          SizedBox(
+            width: MediaQuery.of(context).size.width *
+                (MediaQuery.of(context).size.width < _compactBreakpoint ? 1.0 : 0.6),
+            child: _ProcessSteps(steps: _steps),
+          ),
           const SizedBox(height: 56),
-          RichText(
-            textAlign: TextAlign.center,
-            text: TextSpan(
+          Text.rich(
+            TextSpan(
               style: TextStyle(
-                fontSize: 24,
+                fontSize: AppFont.h2(context),
                 fontWeight: FontWeight.bold,
                 color: Colors.blueGrey.shade900,
                 height: 1.4,
@@ -171,30 +180,33 @@ class OverstapSection extends StatelessWidget {
                 const TextSpan(text: ' voor u klaar.'),
               ],
             ),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
           _SupportFeaturesGrid(features: _supportFeatures),
           const SizedBox(height: 32),
-          OutlinedButton(
-            onPressed: onOverstappenPressed,
-            style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.blueGrey.shade900,
-              side: BorderSide(color: Colors.blueGrey.shade900),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'Meer over overstappen',
-                  style: TextStyle(fontWeight: FontWeight.w600),
+          HoverScale(
+            child: OutlinedButton(
+              onPressed: onOverstappenPressed,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.blueGrey.shade900,
+                side: BorderSide(color: Colors.blueGrey.shade900),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
                 ),
-                const SizedBox(width: 8),
-                const Icon(Icons.arrow_forward, size: 16),
-              ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Meer over overstappen',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(width: 8),
+                  const Icon(Icons.arrow_forward, size: 16),
+                ],
+              ),
             ),
           ),
         ],

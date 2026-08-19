@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'type_scale.dart';
+import 'package:go_router/go_router.dart';
 
 import 'block_container.dart';
+import 'micro_animations.dart';
 import 'responsive.dart';
+import 'reveal_on_scroll.dart';
 
 class DemoCtaBanner extends StatelessWidget {
   final String heading;
@@ -39,14 +43,16 @@ class DemoCtaBanner extends StatelessWidget {
                 Image.asset("lib/assets/frame.png", fit: BoxFit.cover),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: mobile ? 20 : 24),
-                  child: Column(
+                  child: RevealOnScroll(
+                    offset: const Offset(0, 24),
+                    child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         heading,
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: mobile ? 22 : 28,
+                          fontSize: AppFont.h2(context),
                           fontWeight: FontWeight.bold,
                         ),
                         textAlign: TextAlign.center,
@@ -70,21 +76,33 @@ class DemoCtaBanner extends StatelessWidget {
                         spacing: 16,
                         runSpacing: 12,
                         children: [
-                          ElevatedButton(
-                            onPressed: onDemoPressed ?? () {},
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: const Color.fromRGBO(37, 106, 130, 1),
-                              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 18),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                              elevation: 0,
+                          HoverScale(
+                            scale: 1.06,
+                            child: Wiggle(
+                              angle: 0.02,
+                              interval: const Duration(seconds: 7),
+                              child: PulseGlow(
+                                color: Colors.white,
+                                borderRadius: 30,
+                                child: ElevatedButton(
+                                  onPressed: onDemoPressed ?? () => context.go('/contact'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    foregroundColor: const Color.fromRGBO(37, 106, 130, 1),
+                                    padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 18),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                                    elevation: 0,
+                                  ),
+                                  child: const Text('Plan een Demo', style: TextStyle(fontWeight: FontWeight.bold)),
+                                ),
+                              ),
                             ),
-                            child: const Text('Plan een Demo', style: TextStyle(fontWeight: FontWeight.bold)),
                           ),
                           ?secondaryAction,
                         ],
                       ),
                     ],
+                    ),
                   ),
                 ),
               ],

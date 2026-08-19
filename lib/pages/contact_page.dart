@@ -1,9 +1,18 @@
+import 'dart:async';
+
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+import '../widgets/general/auto_scroll_view.dart';
 import 'package:flutter/material.dart';
+import '../widgets/general/type_scale.dart';
+import '../widgets/general/content_container.dart';
 import 'package:go_router/go_router.dart';
 
 import '../widgets/general/block_container.dart';
 import '../widgets/general/demo_cta_banner.dart';
 import '../widgets/general/footer.dart';
+import '../widgets/general/micro_animations.dart';
+import '../widgets/general/reveal_on_scroll.dart';
 
 const _darkTeal = Color(0xFF0F3B3F);
 const _teal = Color(0xFF17A8A6);
@@ -105,27 +114,23 @@ class _ContactPageState extends State<ContactPage> {
     final isMobile = MediaQuery.of(context).size.width < 900;
 
     return Scaffold(
-      body: SingleChildScrollView(
+      body: AutoScrollView(
         child: Column(
           children: [
             const SizedBox(height: 56),
             BlockContainer(
               screenWidthFactor: 1,
               child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 900),
+                child: ContentContainer(
                   child: Column(
                     children: [
-                      const Text(
+                      Text(
                         "Neem contact met ons op",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 34,
+                          fontSize: AppFont.h1(context),
                           fontWeight: FontWeight.bold,
                           color: _darkTeal,
-                          decoration: TextDecoration.underline,
-                          decorationColor: _darkTeal,
-                          decorationThickness: 3,
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -151,14 +156,13 @@ class _ContactPageState extends State<ContactPage> {
             BlockContainer(
               screenWidthFactor: 1,
               child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 1100),
+                child: ContentContainer(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         "Stuur ons een bericht",
-                        style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: _darkTeal),
+                        style: TextStyle(fontSize: AppFont.h2(context), fontWeight: FontWeight.bold, color: _darkTeal),
                       ),
                       const SizedBox(height: 8),
                       const Text(
@@ -176,14 +180,13 @@ class _ContactPageState extends State<ContactPage> {
               backgroundColor: const Color.fromRGBO(226, 238, 245, 1),
               screenWidthFactor: 1,
               child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 1100),
+                child: ContentContainer(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         "Bent u al klant?",
-                        style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: _darkTeal),
+                        style: TextStyle(fontSize: AppFont.h2(context), fontWeight: FontWeight.bold, color: _darkTeal),
                       ),
                       const SizedBox(height: 8),
                       ConstrainedBox(
@@ -281,6 +284,10 @@ class _ContactPageState extends State<ContactPage> {
       return Column(children: [infoColumn, const SizedBox(height: 32), formColumn]);
     }
 
+    // Both columns are forced to the same height so the bottom of the map and
+    // the bottom of the form card land on the same line. The surplus height no
+    // longer shows as dead white space because the message field inside the
+    // form expands to take it (see _buildFormCard).
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -333,18 +340,23 @@ class _ContactPageState extends State<ContactPage> {
   }
 
   Widget _buildMap() {
+    final Completer<GoogleMapController> mapcontroller = Completer<GoogleMapController>();
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
+      // This ratio is the one knob for the whole two-column block. The info
+      // column's height sets the row height (both columns are stretched to
+      // match), and the form's other content is a fixed ~540px, so the Bericht
+      // field gets whatever is left: shortening the map shortens the message
+      // box by the same amount. At 1080p, 1.6 gives a ~366px map and a ~263px
+      // message box; lower the ratio for a squarer map and a taller Bericht.
       child: AspectRatio(
-        aspectRatio: 1.05,
-        child: Image.asset(
-          'lib/assets/contact_map.png',
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => Container(
-            color: const Color(0xFFE9EEF0),
-            alignment: Alignment.center,
-            child: const Icon(Icons.map_outlined, size: 48, color: Color(0xFFB0B0B0)),
-          ),
+        aspectRatio: 1.8,
+        child: GoogleMap(
+          mapType: MapType.hybrid,
+          initialCameraPosition: CameraPosition(target: LatLng(52.211347463377884, 6.893192165738634), zoom: 19),
+          onMapCreated: (GoogleMapController controller) {
+            mapcontroller.complete(controller);
+          },
         ),
       ),
     );
@@ -361,9 +373,9 @@ class _ContactPageState extends State<ContactPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             "Neem contact op",
-            style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: _darkTeal),
+            style: TextStyle(fontSize: AppFont.h3(context), fontWeight: FontWeight.bold, color: _darkTeal),
           ),
           const SizedBox(height: 20),
           _fieldRow(
@@ -425,23 +437,50 @@ class _ContactPageState extends State<ContactPage> {
           ),
           const SizedBox(height: 20),
           _fieldLabel("Bericht"),
-          TextField(
-            maxLines: 5,
-            decoration: _fieldDecoration("Vertel ons waar u naar op zoek bent"),
-          ),
+          // On desktop the message box soaks up whatever height is left over,
+          // which is what makes the form card end level with the map beside it.
+          // A fixed line count could only ever approximate that.
+          //
+          // On mobile the card sits in a scrolling column with unbounded
+          // height, where a flex child is illegal — so there it gets a fixed
+          // size instead. minLines matters as well as maxLines: with maxLines
+          // alone an empty field is just one line tall.
+          if (isMobile)
+            TextField(
+              minLines: 6,
+              maxLines: 10,
+              textAlignVertical: TextAlignVertical.top,
+              decoration: _fieldDecoration("Vertel ons waar u naar op zoek bent"),
+            )
+          else
+            Expanded(
+              child: TextField(
+                expands: true,
+                maxLines: null,
+                minLines: null,
+                textAlignVertical: TextAlignVertical.top,
+                decoration: _fieldDecoration("Vertel ons waar u naar op zoek bent"),
+              ),
+            ),
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _teal,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                elevation: 0,
+            child: HoverScale(
+              scale: 1.02,
+              child: PulseGlow(
+                borderRadius: 10,
+                child: ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _teal,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    elevation: 0,
+                  ),
+                  child: const Text("Plan mijn Demo", style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
               ),
-              child: const Text("Plan mijn Demo", style: TextStyle(fontWeight: FontWeight.bold)),
             ),
           ),
           const SizedBox(height: 16),
@@ -472,7 +511,7 @@ class _ContactPageState extends State<ContactPage> {
         icon: Icons.headset_mic_outlined,
         title: "Supportlijn",
         description: "Heeft u tijdens het werken een vraag? Bel ons rechtstreeks, dan denken we direct met u mee.",
-        action: const Text("053 - 477 77 86", style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: _darkTeal)),
+        action: Text("053 - 477 77 86", style: TextStyle(fontSize: AppFont.h3(context), fontWeight: FontWeight.bold, color: _darkTeal)),
       ),
       _SupportTeaserCard(
         icon: Icons.download_outlined,
@@ -605,25 +644,32 @@ class _SupportTeaserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _cardBorder),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 26, color: _darkTeal),
-          const SizedBox(height: 16),
-          Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: _darkTeal)),
-          const SizedBox(height: 8),
-          Text(description, style: const TextStyle(fontSize: 13, color: _subtext, height: 1.5)),
-          const SizedBox(height: 16),
-          action,
-        ],
+    return HoverLift(
+      lift: 5,
+      borderRadius: 16,
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: _cardBorder),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Wiggle(
+              interval: const Duration(seconds: 7),
+              child: Icon(icon, size: 26, color: _darkTeal),
+            ),
+            const SizedBox(height: 16),
+            Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: _darkTeal)),
+            const SizedBox(height: 8),
+            Text(description, style: const TextStyle(fontSize: 13, color: _subtext, height: 1.5)),
+            const SizedBox(height: 16),
+            action,
+          ],
+        ),
       ),
     );
   }

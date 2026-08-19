@@ -1,4 +1,6 @@
+import '../widgets/general/auto_scroll_view.dart';
 import 'package:flutter/material.dart';
+import '../widgets/general/type_scale.dart';
 
 import '../widgets/general/block_container.dart';
 import '../widgets/general/footer.dart';
@@ -260,7 +262,7 @@ class _VeelgesteldeVragenPageState extends State<VeelgesteldeVragenPage> {
     final noMatchesAtAll = _query.isNotEmpty && !_categories.any((c) => c.items.any(_matches));
 
     return Scaffold(
-      body: SingleChildScrollView(
+      body: AutoScrollView(
         controller: _scrollController,
         child: Column(
           children: [
@@ -290,7 +292,7 @@ class _VeelgesteldeVragenPageState extends State<VeelgesteldeVragenPage> {
                         "Waar kunnen we u mee helpen?",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: mobile ? 26 : 42,
+                          fontSize: AppFont.h1(context),
                           fontWeight: FontWeight.bold,
                           color: _darkTeal,
                         ),
@@ -386,7 +388,7 @@ class _VeelgesteldeVragenPageState extends State<VeelgesteldeVragenPage> {
             children: [
               Text(
                 category.heading,
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: _teal),
+                style: TextStyle(fontSize: AppFont.h2(context), fontWeight: FontWeight.bold, color: _teal),
               ),
               const SizedBox(height: 12),
               const Divider(color: _dividerColor, thickness: 1),
@@ -407,7 +409,7 @@ class _VeelgesteldeVragenPageState extends State<VeelgesteldeVragenPage> {
   }
 }
 
-class _FaqTile extends StatelessWidget {
+class _FaqTile extends StatefulWidget {
   final _FaqItemData item;
   final bool expanded;
   final VoidCallback onTap;
@@ -415,19 +417,44 @@ class _FaqTile extends StatelessWidget {
   const _FaqTile({required this.item, required this.expanded, required this.onTap});
 
   @override
+  State<_FaqTile> createState() => _FaqTileState();
+}
+
+class _FaqTileState extends State<_FaqTile> {
+  bool _hovering = false;
+
+  @override
   Widget build(BuildContext context) {
+    final expanded = widget.expanded;
+    final item = widget.item;
     return Column(
       children: [
         InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 18),
+          onTap: widget.onTap,
+          onHover: (hovering) => setState(() => _hovering = hovering),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOutCubic,
+            decoration: BoxDecoration(
+              color: _hovering ? _teal.withValues(alpha: 0.06) : Colors.transparent,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            padding: EdgeInsets.only(
+              top: 18,
+              bottom: 18,
+              right: 8,
+              left: _hovering ? 12 : 2,
+            ),
             child: Row(
               children: [
                 Expanded(
                   child: Text(
                     item.question,
-                    style: const TextStyle(fontSize: 15, color: Color(0xFF222222)),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: _hovering ? FontWeight.w600 : FontWeight.w400,
+                      color: _hovering ? _darkTeal : const Color(0xFF222222),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -488,13 +515,20 @@ class _CategoryPillState extends State<_CategoryPill> {
       onExit: (_) => setState(() => _hovering = false),
       child: GestureDetector(
         onTap: widget.onTap,
-        child: AnimatedContainer(
+        child: AnimatedScale(
+          scale: _hovering ? 1.06 : 1.0,
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOutCubic,
+          child: AnimatedContainer(
           duration: const Duration(milliseconds: 150),
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
           decoration: BoxDecoration(
             color: selected ? _darkTeal : (_hovering ? const Color(0xFFEFF6F7) : Colors.white),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(color: selected ? _darkTeal : _pillBorder),
+            boxShadow: _hovering
+                ? [BoxShadow(color: _teal.withValues(alpha: 0.25), blurRadius: 10, offset: const Offset(0, 4))]
+                : const [],
           ),
           child: Text(
             widget.label,
@@ -503,6 +537,7 @@ class _CategoryPillState extends State<_CategoryPill> {
               fontWeight: FontWeight.w600,
               color: selected ? Colors.white : _darkTeal,
             ),
+          ),
           ),
         ),
       ),

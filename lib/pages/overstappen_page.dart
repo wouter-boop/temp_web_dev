@@ -1,12 +1,17 @@
+import '../widgets/general/auto_scroll_view.dart';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import '../widgets/general/type_scale.dart';
+import '../widgets/general/content_container.dart';
 import 'package:go_router/go_router.dart';
 
 import '../widgets/general/block_container.dart';
 import '../widgets/general/demo_cta_banner.dart';
 import '../widgets/general/footer.dart';
 import '../widgets/general/hover_arrow_button.dart';
+import '../widgets/general/micro_animations.dart';
+import '../widgets/general/reveal_on_scroll.dart';
 import '../widgets/general/responsibility_card.dart';
 import '../widgets/general/responsive.dart';
 import '../widgets/home_page/faq.dart';
@@ -182,8 +187,8 @@ class _OverstappenPageState extends State<OverstappenPage> {
       description:
           "Tijdens een persoonlijke online demo laten we zien hoe Odontium aansluit op uw praktijk. "
           "We nemen de tijd om uw werkwijze te begrijpen en beantwoorden al uw vragen, zodat u een "
-          "duidelijk beeld heeft voordat u een beslissing neemt.",
-      tags: ["Online, bij u op kantoor kan ook", "Geen verplichtingen", "Neem uw team gerust mee"],
+          "duidelijk beeld heeft voordat u een beslissing maakt.",
+      tags: ["Online", "Geen verplichtingen", "Meerdere aanwezigen is mogelijk"],
     ),
     _TimelineStep(
       number: 2,
@@ -202,7 +207,7 @@ class _OverstappenPageState extends State<OverstappenPage> {
       timeLabel: "overdracht circa 2 uur",
       description:
           "Wij zetten uw gegevens over: patiëntdossiers, behandelhistorie, agenda en financiële "
-          "administratie. Eerst als proefmigratie in de testomgeving, zodat u controleert of alles "
+          "administratie. Eerst als proefmigratie in de testomgeving, zodat u kan controleren of alles "
           "klopt vóór de echte overstap.",
       tags: ["Eerst een proefmigratie", "Versleutelde overdracht", "Uw oude systeem blijft beschikbaar"],
     ),
@@ -221,19 +226,19 @@ class _OverstappenPageState extends State<OverstappenPage> {
       number: 5,
       color: Color(0xFF8FCBEA),
       title: "Livegang",
-      timeLabel: "u bepaalt de datum",
+      timeLabel: "U bepaalt de datum",
       description:
           "Wanneer u er klaar voor bent, gaat uw praktijk live. Omdat u de software al heeft gebruikt "
           "en uw gegevens beschikbaar zijn, verloopt deze stap soepel. De eerste [twee] weken kijken "
           "wij extra mee.",
-      tags: ["Zelf de datum kiezen", "Extra support in week 1 en 2", "Oude systeem pas daarna uit"],
+      tags: ["Zelf de datum kiezen", "Extra support in week 1 en 2", "Oude systeem pas daarna er uit"],
     ),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
+      body: AutoScrollView(
         child: Column(
           children: [
             const SizedBox(height: 56),
@@ -282,9 +287,9 @@ class _OverstappenPageState extends State<OverstappenPage> {
                             ),
                           ),
                           const SizedBox(width: 14),
-                          const Text(
+                          Text(
                             "Odontium",
-                            style: TextStyle(fontSize: 38, fontWeight: FontWeight.bold, color: _teal),
+                            style: TextStyle(fontSize: AppFont.h1(context), fontWeight: FontWeight.bold, color: _teal),
                           ),
                         ],
                       ),
@@ -307,7 +312,7 @@ class _OverstappenPageState extends State<OverstappenPage> {
                         runSpacing: 12,
                         children: [
                           ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () => context.go('/contact'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: _teal,
                               foregroundColor: Colors.white,
@@ -321,7 +326,7 @@ class _OverstappenPageState extends State<OverstappenPage> {
                             ),
                           ),
                           OutlinedButton(
-                            onPressed: () {},
+                            onPressed: () => context.go('/contact'),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: _darkTeal,
                               side: const BorderSide(color: Color(0xFFDADADA)),
@@ -355,44 +360,69 @@ class _OverstappenPageState extends State<OverstappenPage> {
             BlockContainer(
               screenWidthFactor: 1,
               child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 1000),
+                child: ContentContainer(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "Van kennismaking tot livegang",
-                        style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: _darkTeal),
+                      RevealOnScroll(
+                        child: Text(
+                          "Van kennismaking tot livegang",
+                          style: TextStyle(fontSize: AppFont.h2(context), fontWeight: FontWeight.bold, color: _darkTeal),
+                        ),
                       ),
                       const SizedBox(height: 10),
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 620),
-                        child: const Text(
-                          "Vijf duidelijke stappen, waarbij u nooit alleen staat. Ons team begeleidt u "
-                          "persoonlijk gedurende het hele traject.",
-                          style: TextStyle(fontSize: 14, color: _subtext, height: 1.5),
+                      RevealOnScroll(
+                        delay: const Duration(milliseconds: 100),
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 620),
+                          child: const Text(
+                            "Vijf duidelijke stappen, waarbij u nooit alleen staat. Ons team begeleidt u "
+                            "persoonlijk gedurende het hele traject.",
+                            style: TextStyle(fontSize: 14, color: _subtext, height: 1.5),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 16),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Icon(Icons.info_outline, size: 16, color: _teal),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              "Gemiddeld vier weken van eerste gesprek tot livegang.",
-                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: _teal),
-                            ),
+                      RevealOnScroll(
+                        delay: const Duration(milliseconds: 200),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: _mint,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: _teal.withValues(alpha: 0.35)),
                           ),
-                        ],
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Wiggle(
+                                interval: const Duration(seconds: 6),
+                                child: const Icon(Icons.info_outline, size: 16, color: _teal),
+                              ),
+                              const SizedBox(width: 8),
+                              const Flexible(
+                                child: Text(
+                                  "Gemiddeld vier weken van eerste gesprek tot livegang.",
+                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: _teal),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 24),
+                      // Each step slides in from the left as it enters view.
                       for (var i = 0; i < _steps.length; i++)
-                        _TimelineStepRow(
-                          step: _steps[i],
-                          isFirst: i == 0,
-                          isLast: i == _steps.length - 1,
+                        RevealOnScroll(
+                          offset: const Offset(-36, 0),
+                          child: Padding(
+                            padding: EdgeInsetsGeometry.symmetric(vertical: 0),
+                            child: _TimelineStepRow(
+                              step: _steps[i],
+                              isFirst: i == 0,
+                              isLast: i == _steps.length - 1,
+                            ),
+                          ),
                         ),
                     ],
                   ),
@@ -401,6 +431,7 @@ class _OverstappenPageState extends State<OverstappenPage> {
             ),
             BlockContainer(
               screenWidthFactor: 1,
+              softTopEdge: const Color(0xFFF8F9FB),
               gradient: const LinearGradient(
                 colors: [Color.fromRGBO(77, 132, 152, 1), Colors.white],
                 begin: Alignment.topCenter,
@@ -408,10 +439,10 @@ class _OverstappenPageState extends State<OverstappenPage> {
               ),
               child: Column(
                 children: [
-                  const Text(
+                  Text(
                     "Ook na de livegang\nblijven we betrokken",
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white, height: 1.3),
+                    style: TextStyle(fontSize: AppFont.h2(context), fontWeight: FontWeight.bold, color: Colors.white, height: 1.3),
                   ),
                   const SizedBox(height: 16),
                   ConstrainedBox(
@@ -425,8 +456,7 @@ class _OverstappenPageState extends State<OverstappenPage> {
                     ),
                   ),
                   const SizedBox(height: 32),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 900),
+                  ContentContainer(
                     child: isMobile(context)
                         ? Column(
                             children: [
@@ -452,24 +482,25 @@ class _OverstappenPageState extends State<OverstappenPage> {
               ),
             ),
             BlockContainer(
+              backgroundColor: Colors.white,
               screenWidthFactor: 1,
               child: Column(
                 children: [
-                  RichText(
-                    textAlign: TextAlign.center,
-                    text: const TextSpan(
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: _darkTeal),
+                  Text.rich(
+                    TextSpan(
+                      style: TextStyle(fontSize: AppFont.h2(context), fontWeight: FontWeight.bold, color: _darkTeal),
                       children: [
                         TextSpan(text: "Wat praktijken zeggen over de "),
                         TextSpan(text: "overstap", style: TextStyle(color: _teal)),
                         TextSpan(text: " naar Odontium"),
                       ],
                     ),
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 40),
                   TestimonialSection(
                     data: const TestimonialData(
-                      photoAsset: 'assets/images/testimonial_joep.jpg',
+                      photoAsset: 'lib/assets/testimonial_tppvanengelen.jpg',
                       authorName: 'Joep van Engelen',
                       authorRole: 'TPP van Engelen',
                       quote: [
@@ -485,14 +516,16 @@ class _OverstappenPageState extends State<OverstappenPage> {
                         TextSpan(text: '.'),
                       ],
                     ),
-                    onCtaPressed: () {},
+                    onCtaPressed: () => context.go('/over_ons/klantverhalen'),
                   ),
                 ],
               ),
             ),
             BlockContainer(
+              backgroundColor: Colors.white,
               screenWidthFactor: 1,
-              child: Container(
+              child: ContentContainer(
+                child: Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: isMobile(context) ? 20 : 32,
                   vertical: isMobile(context) ? 32 : 48,
@@ -503,10 +536,10 @@ class _OverstappenPageState extends State<OverstappenPage> {
                 ),
                 child: Column(
                   children: [
-                    const Text(
+                    Text(
                       "Wat wij doen, en wat wij\nvan u vragen",
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: _darkTeal, height: 1.3),
+                      style: TextStyle(fontSize: AppFont.h2(context), fontWeight: FontWeight.bold, color: _darkTeal, height: 1.3),
                     ),
                     const SizedBox(height: 16),
                     ConstrainedBox(
@@ -561,23 +594,25 @@ class _OverstappenPageState extends State<OverstappenPage> {
                   ],
                 ),
               ),
+              ),
             ),
             BlockContainer(
+              backgroundColor: Colors.white,
               screenWidthFactor: 1,
               child: Center(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 700),
                   child: Column(
                     children: [
-                      const Text(
+                      Text(
                         "Veelgestelde vragen over\noverstappen",
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: _darkTeal, height: 1.3),
+                        style: TextStyle(fontSize: AppFont.h2(context), fontWeight: FontWeight.bold, color: _darkTeal, height: 1.3),
                       ),
                       const SizedBox(height: 16),
                       const Text(
                         "Antwoorden op de vragen die we het vaakst horen, ingedeeld per fase van de "
-                        "overstap.",
+                            "overstap.",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 14, color: _subtext, height: 1.5),
                       ),
@@ -604,13 +639,36 @@ class _OverstappenPageState extends State<OverstappenPage> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      FAQSection(
-                        showTitle: false,
-                        showTopDivider: true,
-                        items: _faqPhases[_selectedFaqPhase],
-                        trailing: HoverArrowButton(
-                          label: "Alle veelgestelde vragen",
-                          onPressed: () => context.go('/veelgestelde-vragen'),
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        switchInCurve: Curves.easeOutCubic,
+                        switchOutCurve: Curves.easeInCubic,
+                        transitionBuilder: (child, animation) => FadeTransition(
+                          opacity: animation,
+                          child: SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(0, 0.02),
+                              end: Offset.zero,
+                            ).animate(animation),
+                            child: child,
+                          ),
+                        ),
+                        layoutBuilder: (currentChild, previousChildren) => Stack(
+                          alignment: Alignment.topCenter,
+                          children: [
+                            ...previousChildren,
+                            if (currentChild != null) currentChild,
+                          ],
+                        ),
+                        child: FAQSection(
+                          key: ValueKey(_selectedFaqPhase),
+                          showTitle: false,
+                          showTopDivider: true,
+                          items: _faqPhases[_selectedFaqPhase],
+                          trailing: HoverArrowButton(
+                            label: "Alle veelgestelde vragen",
+                            onPressed: () => context.go('/veelgestelde-vragen'),
+                          ),
                         ),
                       ),
                     ],
@@ -621,7 +679,7 @@ class _OverstappenPageState extends State<OverstappenPage> {
             const DemoCtaBanner(
               heading: "Klaar om de overstap te maken?",
               description:
-                  "Plan een gratis demo en ontdek hoe eenvoudig overstappen naar Odontium kan zijn. "
+              "Plan een gratis demo en ontdek hoe eenvoudig overstappen naar Odontium kan zijn. "
                   "We laten u graag zien hoe de software aansluit op uw praktijk en begeleiden u bij "
                   "iedere stap van het proces.",
             ),
@@ -650,11 +708,14 @@ class _BandItemView extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          width: 24,
-          height: 24,
-          decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-          child: Icon(item.icon, size: 14, color: _teal),
+        Wiggle(
+          interval: const Duration(seconds: 6),
+          child: Container(
+            width: 24,
+            height: 24,
+            decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+            child: Icon(item.icon, size: 14, color: _teal),
+          ),
         ),
         const SizedBox(width: 10),
         Text(
@@ -684,6 +745,9 @@ class _TimelineStep {
   });
 }
 
+/// One step in the overstap timeline. Deliberately non-interactive: it's
+/// descriptive copy, not a control, so the row itself has no hover state.
+/// Only the tag chips react to the pointer.
 class _TimelineStepRow extends StatelessWidget {
   final _TimelineStep step;
   final bool isFirst;
@@ -695,26 +759,39 @@ class _TimelineStepRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final mobile = isMobile(context);
 
-    // Title + time label used to sit in a baseline Row, which is fine when the
-    // text column gets ~3/5 of a ~1000px-wide desktop layout but overflows once
-    // that column shrinks to mobile width (long titles like "Inrichten &
-    // begeleiding" plus their time label no longer fit on one line). A Wrap
-    // lets the pair fall onto a second line instead of overflowing.
+    // Title + time label sit in a Wrap so long titles fall onto a second
+    // line on narrow screens instead of overflowing. The time label is a
+    // colored pill (in the step's own color) with a clock icon.
     final titleBlock = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         Wrap(
           crossAxisAlignment: WrapCrossAlignment.center,
-          spacing: 8,
+          spacing: 10,
+          runSpacing: 6,
           children: [
             Text(
               step.title,
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _darkTeal),
             ),
-            Text(
-              step.timeLabel,
-              style: const TextStyle(fontSize: 12, color: _subtext, fontStyle: FontStyle.italic),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: step.color.withValues(alpha: 0.16),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.schedule, size: 12, color: _darkTeal),
+                  const SizedBox(width: 4),
+                  Text(
+                    step.timeLabel,
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: _darkTeal),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -726,98 +803,124 @@ class _TimelineStepRow extends StatelessWidget {
       ],
     );
 
+    // Tags cascade in one by one when the step scrolls into view.
     final tagsBlock = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
-      children: [for (final tag in step.tags) _TimelineTag(tag)],
+      children: [
+        for (var i = 0; i < step.tags.length; i++)
+          RevealOnScroll(
+            delay: Duration(milliseconds: 150 + i * 120),
+            offset: const Offset(24, 0),
+            child: _TimelineTag(step.tags[i], accentColor: step.color),
+          ),
+      ],
+    );
+
+    final diamond = Transform.rotate(
+      angle: math.pi / 4,
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: step.color,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 6, offset: const Offset(0, 3)),
+          ],
+        ),
+        child: Center(
+          child: Transform.rotate(
+            angle: -math.pi / 4,
+            child: Text(
+              '${step.number}',
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+          ),
+        ),
+      ),
     );
 
     return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SizedBox(
-            width: mobile ? 60 : 90,
-            child: isFirst
-                ? Column(
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        margin: const EdgeInsets.only(top: 4),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: step.color,
-                          boxShadow: [
-                            BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 8, offset: const Offset(0, 3)),
-                          ],
-                        ),
-                        child: const Icon(Icons.headset_mic_outlined, size: 18, color: Colors.white),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        "Persoonlijke ondersteuning gedurende iedere stap",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 10, color: _subtext, height: 1.3),
-                      ),
-                      const SizedBox(height: 12),
-                      const Expanded(child: _DashedVerticalLine()),
-                    ],
-                  )
-                : const _DashedVerticalLine(),
-          ),
-          SizedBox(
-            width: mobile ? 44 : 56,
-            child: Column(
-              children: [
-                Expanded(child: isFirst ? const SizedBox() : Container(width: 2, color: const Color(0xFFDCEEF2))),
-                Transform.rotate(
-                  angle: math.pi / 4,
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(color: step.color, borderRadius: BorderRadius.circular(10)),
-                    child: Center(
-                      child: Transform.rotate(
-                        angle: -math.pi / 4,
-                        child: Text(
-                          '${step.number}',
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(child: isLast ? const SizedBox() : Container(width: 2, color: const Color(0xFFDCEEF2))),
-              ],
-            ),
-          ),
-          SizedBox(width: mobile ? 12 : 24),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: mobile ? 16 : 20),
-              child: mobile
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              width: mobile ? 60 : 90,
+              child: isFirst
                   ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        titleBlock,
+                        Wiggle(
+                          interval: const Duration(seconds: 5),
+                          angle: 0.1,
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            margin: const EdgeInsets.only(top: 4),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: step.color,
+                              boxShadow: [
+                                BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 8, offset: const Offset(0, 3)),
+                              ],
+                            ),
+                            child: const Icon(Icons.headset_mic_outlined, size: 18, color: Colors.white),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          "Persoonlijke ondersteuning gedurende iedere stap",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 10, color: _subtext, height: 1.3),
+                        ),
                         const SizedBox(height: 12),
-                        tagsBlock,
+                        const Expanded(child: _DashedVerticalLine()),
                       ],
                     )
-                  : Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(flex: 3, child: titleBlock),
-                        const SizedBox(width: 24),
-                        Expanded(flex: 2, child: tagsBlock),
-                      ],
-                    ),
+                  : const _DashedVerticalLine(),
             ),
-          ),
-        ],
-      ),
+            SizedBox(
+              width: mobile ? 44 : 56,
+              child: Column(
+                children: [
+                  Expanded(child: isFirst ? const SizedBox() : Container(width: 2, color: const Color(0xFFDCEEF2))),
+                  diamond,
+                  Expanded(child: isLast ? const SizedBox() : Container(width: 2, color: const Color(0xFFDCEEF2))),
+                ],
+              ),
+            ),
+            SizedBox(width: mobile ? 12 : 24),
+            Expanded(
+              // This is the knob for how far apart the steps sit: the row is
+              // sized by its content, and the connector segments in the column
+              // to the left are Expanded, so taller rows push the diamonds
+              // apart while the line grows to stay unbroken. (Putting the gap
+              // *outside* the row instead would leave a stretch the line
+              // cannot reach, splitting it between every step.)
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: mobile ? 26 : 36),
+                child: mobile
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            titleBlock,
+                            const SizedBox(height: 12),
+                            tagsBlock,
+                          ],
+                        )
+                      : Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(flex: 3, child: titleBlock),
+                            const SizedBox(width: 24),
+                            Expanded(flex: 2, child: tagsBlock),
+                          ],
+                        ),
+              ),
+            ),
+          ],
+        ),
     );
   }
 }
@@ -845,21 +948,70 @@ class _DashedVerticalLine extends StatelessWidget {
   }
 }
 
-class _TimelineTag extends StatelessWidget {
+class _TimelineTag extends StatefulWidget {
   final String text;
+  final Color accentColor;
 
-  const _TimelineTag(this.text);
+  const _TimelineTag(this.text, {this.accentColor = _teal});
+
+  @override
+  State<_TimelineTag> createState() => _TimelineTagState();
+}
+
+class _TimelineTagState extends State<_TimelineTag> {
+  bool _hovering = false;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        decoration: BoxDecoration(color: _mint, borderRadius: BorderRadius.circular(6)),
-        child: Text(
-          text,
-          style: const TextStyle(fontSize: 11, color: _darkTeal, fontWeight: FontWeight.w600),
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _hovering = true),
+        onExit: (_) => setState(() => _hovering = false),
+        child: AnimatedScale(
+          scale: _hovering ? 1.06 : 1.0,
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOutCubic,
+          alignment: Alignment.centerLeft,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOutCubic,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              color: _hovering ? widget.accentColor : _mint,
+              borderRadius: BorderRadius.circular(_hovering ? 12 : 6),
+              boxShadow: _hovering
+                  ? [BoxShadow(color: widget.accentColor.withValues(alpha: 0.4), blurRadius: 10, offset: const Offset(0, 4))]
+                  : const [],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AnimatedScale(
+                  scale: _hovering ? 1.25 : 1.0,
+                  duration: const Duration(milliseconds: 220),
+                  curve: Curves.easeOutBack,
+                  child: Icon(
+                    Icons.check_rounded,
+                    size: 12,
+                    color: _hovering ? Colors.white : widget.accentColor,
+                  ),
+                ),
+                const SizedBox(width: 5),
+                Flexible(
+                  child: AnimatedDefaultTextStyle(
+                    duration: const Duration(milliseconds: 200),
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: _hovering ? Colors.white : _darkTeal,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    child: Text(widget.text),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -881,35 +1033,39 @@ class _SupportCardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE0E0E0)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(data.icon, size: 22, color: _darkTeal),
-          const SizedBox(height: 12),
-          Text(
-            data.title,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: _darkTeal),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            data.description,
-            style: const TextStyle(fontSize: 12, color: _subtext, height: 1.4),
-          ),
-        ],
+    return HoverLift(
+      lift: 5,
+      borderRadius: 14,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFE0E0E0)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(data.icon, size: 22, color: _darkTeal),
+            const SizedBox(height: 12),
+            Text(
+              data.title,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: _darkTeal),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              data.description,
+              style: const TextStyle(fontSize: 12, color: _subtext, height: 1.4),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class _FaqPhaseTab extends StatelessWidget {
+class _FaqPhaseTab extends StatefulWidget {
   final String label;
   final bool selected;
   final VoidCallback onTap;
@@ -917,24 +1073,44 @@ class _FaqPhaseTab extends StatelessWidget {
   const _FaqPhaseTab({required this.label, required this.selected, required this.onTap});
 
   @override
+  State<_FaqPhaseTab> createState() => _FaqPhaseTabState();
+}
+
+class _FaqPhaseTabState extends State<_FaqPhaseTab> {
+  bool _hovering = false;
+
+  @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-        decoration: BoxDecoration(
-          color: selected ? _darkTeal : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: selected ? _darkTeal : const Color(0xFFDADADA)),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: selected ? Colors.white : _darkTeal,
+    final selected = widget.selected;
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hovering = true),
+      onExit: (_) => setState(() => _hovering = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedScale(
+          scale: _hovering ? 1.06 : 1.0,
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOutCubic,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+            decoration: BoxDecoration(
+              color: selected ? _darkTeal : (_hovering ? const Color(0xFFEFF6F7) : Colors.white),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: selected ? _darkTeal : const Color(0xFFDADADA)),
+              boxShadow: (selected || _hovering)
+                  ? [BoxShadow(color: _darkTeal.withValues(alpha: 0.20), blurRadius: 10, offset: const Offset(0, 4))]
+                  : const [],
+            ),
+            child: Text(
+              widget.label,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: selected ? Colors.white : _darkTeal,
+              ),
+            ),
           ),
         ),
       ),

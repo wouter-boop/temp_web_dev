@@ -3,21 +3,20 @@ import 'package:flutter/material.dart';
 const _darkTeal = Color(0xFF0F3B3F);
 const _teal = Color(0xFF17A8A6);
 
-/// A white bordered card listing checkmark bullets under an icon + title,
-/// with a hover-lift effect. Used for side-by-side "who does what" comparisons
-/// (e.g. "Wat wij doen" vs "Wat wij van u vragen").
+/// A white bordered card listing checkmark bullets under an icon + title.
+/// Used for side-by-side "who does what" comparisons (e.g. "Wat wij doen" vs
+/// "Wat wij van u vragen"). At rest both cards look identical with a neutral
+/// border; hovering lifts the card and colors the border.
 class ResponsibilityCard extends StatefulWidget {
   final IconData icon;
   final String title;
   final List<String> bullets;
-  final bool highlighted;
 
   const ResponsibilityCard({
     super.key,
     required this.icon,
     required this.title,
     required this.bullets,
-    this.highlighted = false,
   });
 
   @override
@@ -29,20 +28,23 @@ class _ResponsibilityCardState extends State<ResponsibilityCard> {
 
   @override
   Widget build(BuildContext context) {
-    final borderColor = widget.highlighted ? const Color(0xFF2E9BE0) : _darkTeal.withValues(alpha: 0.35);
-
     return MouseRegion(
       onEnter: (_) => setState(() => _hovering = true),
       onExit: (_) => setState(() => _hovering = false),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutCubic,
+        transform: Matrix4.translationValues(0, _hovering ? -4 : 0, 0),
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: borderColor, width: widget.highlighted ? 1.5 : 1),
+          border: Border.all(
+            color: _hovering ? _teal : _darkTeal.withValues(alpha: 0.2),
+            width: _hovering ? 1.5 : 1,
+          ),
           boxShadow: _hovering
-              ? [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 16, offset: const Offset(0, 6))]
+              ? [BoxShadow(color: _teal.withValues(alpha: 0.22), blurRadius: 18, offset: const Offset(0, 8))]
               : const [],
         ),
         child: Column(

@@ -19,19 +19,55 @@ class FeatureChecklist extends StatelessWidget {
       spacing: spacing,
       runSpacing: runSpacing,
       children: [
-        for (final item in items)
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.check_circle, size: 18, color: Colors.tealAccent),
-              const SizedBox(width: 8),
-              Text(
-                item,
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Colors.black),
-              ),
-            ],
-          ),
+        for (final item in items) _ChecklistItem(label: item),
       ],
+    );
+  }
+}
+
+/// One checkmark entry; on hover the check pops and the label tints teal.
+class _ChecklistItem extends StatefulWidget {
+  const _ChecklistItem({required this.label});
+
+  final String label;
+
+  @override
+  State<_ChecklistItem> createState() => _ChecklistItemState();
+}
+
+class _ChecklistItemState extends State<_ChecklistItem> {
+  bool _hovering = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovering = true),
+      onExit: (_) => setState(() => _hovering = false),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AnimatedScale(
+            scale: _hovering ? 1.35 : 1.0,
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOutBack,
+            child: Icon(
+              Icons.check_circle,
+              size: 18,
+              color: _hovering ? Colors.tealAccent : Color(0xFF83d4d4),
+            ),
+          ),
+          const SizedBox(width: 8),
+          AnimatedDefaultTextStyle(
+            duration: const Duration(milliseconds: 180),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w800,
+              color: _hovering ? const Color(0xFF0F3B3F) : Colors.black,
+            ),
+            child: Text(widget.label),
+          ),
+        ],
+      ),
     );
   }
 }

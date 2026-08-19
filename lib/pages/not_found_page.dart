@@ -1,3 +1,4 @@
+import '../widgets/general/auto_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -13,7 +14,7 @@ class NotFoundPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Center(
-        child: SingleChildScrollView(
+        child: AutoScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 80),
           child: Container(
             constraints: const BoxConstraints(maxWidth: 900),

@@ -1,6 +1,11 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
-import 'package:odontium_website/widgets/general/responsive.dart';
-import 'package:odontium_website/widgets/home_page/arrow_button.dart';
+import '../general/type_scale.dart';
+import 'package:go_router/go_router.dart';
+import 'package:Odontium/widgets/general/micro_animations.dart';
+import 'package:Odontium/widgets/general/responsive.dart';
+import 'package:Odontium/widgets/home_page/arrow_button.dart';
 
 class HeroSection extends StatefulWidget {
   const HeroSection({super.key});
@@ -9,7 +14,40 @@ class HeroSection extends StatefulWidget {
   State<HeroSection> createState() => _HeroSectionState();
 }
 
-class _HeroSectionState extends State<HeroSection> {
+class _HeroSectionState extends State<HeroSection>
+    with SingleTickerProviderStateMixin {
+  // Staggered entrance: headline -> subtext -> buttons -> stats.
+  late final AnimationController _entrance = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1100),
+  )..forward();
+
+  @override
+  void dispose() {
+    _entrance.dispose();
+    super.dispose();
+  }
+
+  /// Fade + slide-up for one stage of the entrance, where [start]/[end] are
+  /// fractions of the total controller duration.
+  Widget _staged(double start, double end, Widget child) {
+    final animation = CurvedAnimation(
+      parent: _entrance,
+      curve: Interval(start, end, curve: Curves.easeOutCubic),
+    );
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, child) => Opacity(
+        opacity: animation.value,
+        child: Transform.translate(
+          offset: Offset(0, 24 * (1 - animation.value)),
+          child: child,
+        ),
+      ),
+      child: child,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -25,7 +63,9 @@ class _HeroSectionState extends State<HeroSection> {
         : (proportionalPadding > capPadding ? proportionalPadding : capPadding);
 
     return SizedBox(
-      height: screenSize.height,
+      // Never shrink below what the headline + CTA + stats need on a short
+      // window (small landscape phones, half-height desktop windows).
+      height: math.max(screenSize.height, mobile ? 700 : 640),
       width: screenSize.width,
       child: Stack(
         fit: StackFit.expand,
@@ -67,94 +107,116 @@ class _HeroSectionState extends State<HeroSection> {
               children: [
                 const Spacer(flex: 2),
 
-                Text(
-                  mobile
-                      ? 'Praktijksoftware die met uw praktijk meegroeit'
-                      : 'Praktijksoftware die \nmet uw praktijk \nmeegroeit',
-                  style: TextStyle(
-                    fontSize: mobile ? 30 : 52,
-                    height: 1.15,
-                    fontFamily: "Segoe UI",
-                    fontWeight: FontWeight.w900,
-                    color: const Color(0xFF0F382C),
+                _staged(
+                  0.0,
+                  0.55,
+                  Text(
+                    mobile
+                        ? 'Praktijksoftware die met uw praktijk meegroeit'
+                        : 'Praktijksoftware die \nmet uw praktijk \nmeegroeit',
+                    style: TextStyle(
+                      fontSize: AppFont.h1(context),
+                      height: 1.15,
+                      fontFamily: "Segoe UI",
+                      fontWeight: FontWeight.w900,
+                      color: const Color(0xFF0F382C),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
 
                 // Subtext
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 450),
-                  child: Text(
-                    'Al meer dan 35 jaar ontwikkelt TSE met Odontium praktijksoftware voor tandartspraktijken, mondhygiënisten\ntandtechnici en prothetici.',
-                    style: TextStyle(
-                      fontSize: mobile ? 14 : 16,
-                      height: 1.5,
-                      color: const Color(0xFF0F382C).withValues(alpha: 0.8),
+                _staged(
+                  0.15,
+                  0.7,
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 450),
+                    child: Text(
+                      'Al meer dan 35 jaar ontwikkelt TSE met Odontium praktijksoftware voor tandartspraktijken, mondhygiënisten\ntandtechnici en prothetici.',
+                      style: TextStyle(
+                        fontSize: mobile ? 14 : 16,
+                        height: 1.5,
+                        color: const Color(0xFF0F382C).withValues(alpha: 0.8),
+                      ),
                     ),
                   ),
                 ),
                 const SizedBox(height: 32),
 
                 // CTA Buttons
-                if (mobile)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF00A896),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 28,
-                            vertical: 16,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          elevation: 0,
+                _staged(
+                  0.3,
+                  0.85,
+                  mobile
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            PulseGlow(
+                              color: const Color(0xFF00A896),
+                              borderRadius: 30,
+                              child: ElevatedButton(
+                                onPressed: () => context.go('/contact'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF00A896),
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 28,
+                                    vertical: 16,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  elevation: 0,
+                                ),
+                                child: const Text(
+                                  'Boek een Demo',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            ArrowButton(text: "Ontdek Odontium", function: () => context.go('/Odontium')),
+                          ],
+                        )
+                      : Row(
+                          children: [
+                            HoverScale(
+                              scale: 1.06,
+                              child: PulseGlow(
+                                color: const Color(0xFF00A896),
+                                borderRadius: 30,
+                                child: ElevatedButton(
+                                  onPressed: () => context.go('/contact'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF00A896),
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 28,
+                                      vertical: 18,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    elevation: 0,
+                                  ),
+                                  child: const Text(
+                                    'Boek een Demo',
+                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            ArrowButton(text: "Ontdek Odontium", function: () => context.go('/Odontium')),
+                          ],
                         ),
-                        child: const Text(
-                          'Boek een Demo',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      ArrowButton(text: "Ontdek Odontium", function: () => {}),
-                    ],
-                  )
-                else
-                  Row(
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF00A896),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 28,
-                            vertical: 18,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: const Text(
-                          'Boek een Demo',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      ArrowButton(text: "Ontdek Odontium", function: () => {}),
-                    ],
-                  ),
+                ),
 
                 const Spacer(flex: 3),
 
                 // 3. Bottom Stats Grid
-                _StatsGrid(mobile: mobile),
+                _staged(0.45, 1.0, _StatsGrid(mobile: mobile)),
               ],
             ),
           ),

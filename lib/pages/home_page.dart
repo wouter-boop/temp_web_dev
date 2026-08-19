@@ -1,13 +1,20 @@
+import '../widgets/general/auto_scroll_view.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:odontium_website/widgets/home_page/hero.dart';
-import 'package:odontium_website/widgets/home_page/marquee_text.dart';
+import '../widgets/general/hover_arrow_button.dart';
+import '../widgets/general/type_scale.dart';
+import '../widgets/general/content_container.dart';
+import 'package:go_router/go_router.dart';
+import 'package:Odontium/widgets/home_page/hero.dart';
+import 'package:Odontium/widgets/home_page/marquee_text.dart';
 import 'package:http/http.dart' as http;
 import '../connections/grpc_client.dart';
 import '../widgets/checkmark_list.dart';
 import '../widgets/general/block_container.dart';
+import '../widgets/general/demo_cta_banner.dart';
 import '../widgets/general/footer.dart';
 import '../widgets/home_page/FeatureCard/feature_card.dart';
+import '../widgets/home_page/arrow_button.dart';
 import '../widgets/home_page/discipline_cards.dart';
 import '../widgets/home_page/faq.dart';
 import 'package:grpc/grpc.dart';
@@ -16,6 +23,7 @@ import '../widgets/review_section.dart';
 import '../widgets/support_features.dart';
 import '../widgets/home_page/cluster_decoration.dart';
 import '../widgets/general/responsive.dart';
+import '../widgets/general/reveal_on_scroll.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
@@ -27,7 +35,7 @@ class HomePage extends StatelessWidget {
     final screenSize = MediaQuery.of(context).size;
     final mobile = isMobile(context);
     return Scaffold(
-      body: SingleChildScrollView(
+      body: AutoScrollView(
         child: Column(
           children: [
             HeroSection(),
@@ -74,36 +82,43 @@ class HomePage extends StatelessWidget {
                       child: Column(
                         children: [
                           SizedBox(height: 48),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: mobile ? 24.0 : 0.0),
-                            child: Text(
-                              'Alles wat uw praktijk nodig \nheeft in één systeem',
-                              style: TextStyle(
-                                fontSize: mobile ? 32 : 52,
-                                height: 1.15,
-                                fontFamily: "Segoe UI",
-                                fontWeight: FontWeight.w900,
-                                color: const Color(0xFF0F382C),
+                          RevealOnScroll(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: mobile ? 24.0 : 0.0),
+                              child: Text(
+                                'Alles wat uw praktijk nodig \nheeft in één systeem',
+                                style: TextStyle(
+                                  fontSize: AppFont.h2(context),
+                                  height: 1.15,
+                                  fontFamily: "Segoe UI",
+                                  fontWeight: FontWeight.w900,
+                                  color: const Color(0xFF0F382C),
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                              textAlign: TextAlign.center,
                             ),
                           ),
                           SizedBox(height: 32),
-                          Container(
-                            width: 1200,
-                            child: FeatureChecklist(items: const [
-                              'Agenda & afspraakplanning',
-                              'Complete patiëntendossiers',
-                              'Declaraties & facturatie',
-                              'Automatische afspraakherinneringen',
-                              'Persoonlijke support zonder tickets',
-                              'Koppelingen met uw bestaande systemen',
-                              'ISO 27001 & AVG-proof',
-                              ],),
+                          RevealOnScroll(
+                            delay: Duration(milliseconds: 150),
+                            child: ContentContainer(
+                              widthFactor: 0.60,
+                              child: FeatureChecklist(items: const [
+                                'Agenda & afspraakplanning',
+                                'Complete patiëntendossiers',
+                                'Declaraties & facturatie',
+                                'Automatische afspraakherinneringen',
+                                'Persoonlijke support zonder tickets',
+                                'Koppelingen met uw bestaande systemen',
+                                'ISO 27001 & AVG-proof',
+                                ],),
+                            ),
                           ),
                           SizedBox(height: 48,),
-                          FeatureHighlightsSection(
-                            onDiscoverPressed: () => {},
+                          RevealOnScroll(
+                            child: FeatureHighlightsSection(
+                              onDiscoverPressed: () => context.go('/Odontium'),
+                            ),
                           ),
                           SizedBox(height: 48)
                         ],
@@ -114,11 +129,15 @@ class HomePage extends StatelessWidget {
                       hasHorizontalPadding: false,
                       screenWidthFactor: 1,
                       backgroundColor: Colors.grey,
-                      child: DisciplineShowcaseSection(),
+                      softTopEdge: Color.fromRGBO(253, 255, 255, 1),
+                      softBottomEdge: Color(0xFFF8F9FB),
+                      child: DisciplineShowcaseSection(
+                        onViewFeaturesPressed: () => context.go('/Odontium/slimme-functies'),
+                      ),
                     ),
-                    BlockContainer(screenWidthFactor: 1, child: TestimonialSection(
+                    BlockContainer(screenWidthFactor: 1, child: RevealOnScroll(child: TestimonialSection(
                       data: TestimonialData(
-                        photoAsset: 'assets/images/testimonial_joep.jpg',
+                        photoAsset: 'lib/assets/testimonial_tppvanengelen.jpg',
                         authorName: 'Joep van Engelen',
                         authorRole: 'TPP van Engelen',
                         quote: const [
@@ -134,8 +153,8 @@ class HomePage extends StatelessWidget {
                           TextSpan(text: '.'),
                         ],
                       ),
-                      onCtaPressed: () {},
-                    )),
+                      onCtaPressed: () => context.go('/over_ons/klantverhalen'),
+                    ))),
 
 
                   ],
@@ -149,31 +168,53 @@ class HomePage extends StatelessWidget {
             BlockContainer(
                 screenWidthFactor: 1,
                 hasHorizontalPadding: false,
-                child: OverstapSection()
+                padding: EdgeInsetsGeometry.all(0),
+                child: OverstapSection(
+                  onOverstappenPressed: () => context.go('/overstappen'),
+                )
             ),
             BlockContainer(
-              child: FAQSection(
-                title: "Veelgestelde vragen",
-                items: const [
-                  FAQItem(
-                    question:
-                    "Al meer dan 35 jaar ontwikkelt TSE met Odontium praktijksoftware?",
-                    answer:
-                    "Ja. TSE ontwikkelt al meer dan 35 jaar praktijksoftware voor tandartspraktijken en ondersteunt honderden praktijken.",
-                  ),
-                  FAQItem(
-                    question: "Kan ik overstappen vanuit een ander systeem?",
-                    answer:
-                    "Ja. Wij begeleiden de volledige migratie van uw huidige software naar Odontium.",
-                  ),
-                  FAQItem(
-                    question: "Bieden jullie ondersteuning?",
-                    answer:
-                    "Onze supportafdeling staat iedere werkdag klaar om u te helpen.",
-                  ),
-                ],
+              backgroundColor: Colors.white,
+              child: RevealOnScroll(
+                child: FAQSection(
+                    title: "Veelgestelde vragen",
+                    items: const [
+                      FAQItem(
+                        question:
+                        "Al meer dan 35 jaar ontwikkelt TSE met Odontium praktijksoftware?",
+                        answer:
+                        "Ja. TSE ontwikkelt al meer dan 35 jaar praktijksoftware voor tandartspraktijken en ondersteunt honderden praktijken.",
+                      ),
+                      FAQItem(
+                        question: "Kan ik overstappen vanuit een ander systeem?",
+                        answer:
+                        "Ja. Wij begeleiden de volledige migratie van uw huidige software naar Odontium.",
+                      ),
+                      FAQItem(
+                        question: "Bieden jullie ondersteuning?",
+                        answer:
+                        "Onze supportafdeling staat iedere werkdag klaar om u te helpen.",
+                      ),
+                    ],
+                    trailing: HoverArrowButton(
+                      label: "Alle veelgestelde vragen",
+                      onPressed: () => context.go('/veelgestelde-vragen'),
+                    )
+                ),
               ),
             ),
+            DemoCtaBanner(
+              heading: "Klaar om Odontium \nzelf te ervaren?",
+              description:
+              "Ontdek tijdens een vrijblijvende persoonlijke demo hoe Odontium uw praktijk "
+                  "helpt efficiënter te werken.",
+              secondaryAction: ArrowButton(
+                text: "Bekijk de functionaliteiten",
+                function: () => context.go('/Odontium/slimme-functies'),
+                white: true,
+              ),
+            ),
+
             // Row(
             //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             //   crossAxisAlignment: CrossAxisAlignment.start,

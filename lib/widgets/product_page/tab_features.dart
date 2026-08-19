@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import '../general/type_scale.dart';
 
 import '../general/responsive.dart';
 
@@ -36,12 +37,12 @@ class _TabFeaturesState extends State<TabFeatures> {
       label: "Docx",
       title: "Textbewerker (.docx)",
       description:
-          "Plan afspraken eenvoudig, beheer meerdere behandelkamers en houd altijd overzicht over uw agenda — ook op drukke dagen met meerdere behandelaars.",
-      bulletPoints: ["Dag-, week- en maandweergave", "Meerdere agenda's", "Herhaalafspraken"],
+          "Geen gedoe met Word, maar direct in het pakket uw bestanden maken en bewerken.",
+      bulletPoints: ["Compatibel met Word", "Razendsnelle interactie", "Automatisch patientgegevens invullen"],
       imagePath: "lib/assets/docx.png",
     ),
     _TabItem(
-      label: "IMAGE",
+      label: "Image",
       title: "Afbeeldingen",
       description: "Beheer en bekijk al uw afbeeldingen direct vanuit de app.",
       bulletPoints: ["Snelle weergave", "Ondersteuning voor JPG, PNG"],
@@ -63,7 +64,7 @@ class _TabFeaturesState extends State<TabFeatures> {
     ),
     _TabItem(
       label: "Email",
-      title: "E-mail Integreer",
+      title: "E-mail Integratie",
       description: "Verzend eenvoudig documenten via e-mail.",
       bulletPoints: ["Sjabloonbeheer", "Automatische verzending"],
       imagePath: "lib/assets/email_preview.png",
@@ -101,7 +102,36 @@ class _TabFeaturesState extends State<TabFeatures> {
               BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 16, offset: const Offset(0, 6)),
             ],
           ),
-          child: _buildTabContent(_tabs[_selectedIndex], mobile),
+          // Fade/slide between formats instead of snapping; AnimatedSize
+          // eases the card's height change when content length differs.
+          child: AnimatedSize(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOutCubic,
+            alignment: Alignment.topCenter,
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 320),
+              switchInCurve: Curves.easeOutCubic,
+              switchOutCurve: Curves.easeInCubic,
+              transitionBuilder: (child, animation) => FadeTransition(
+                opacity: animation,
+                child: SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(0.04, 0),
+                    end: Offset.zero,
+                  ).animate(animation),
+                  child: child,
+                ),
+              ),
+              layoutBuilder: (currentChild, previousChildren) => Stack(
+                alignment: Alignment.topCenter,
+                children: [
+                  ...previousChildren,
+                  if (currentChild != null) currentChild,
+                ],
+              ),
+              child: _buildTabContent(_tabs[_selectedIndex], mobile),
+            ),
+          ),
         ),
       ],
     );
@@ -114,7 +144,7 @@ class _TabFeaturesState extends State<TabFeatures> {
       children: [
         Text(
           item.title,
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: textDark),
+          style: TextStyle(fontSize: AppFont.h3(context), fontWeight: FontWeight.bold, color: textDark),
         ),
         const SizedBox(height: 12),
         Text(
@@ -197,7 +227,7 @@ class _TabFeaturesState extends State<TabFeatures> {
   }
 }
 
-class _FormatChip extends StatelessWidget {
+class _FormatChip extends StatefulWidget {
   final String label;
   final bool selected;
   final VoidCallback onTap;
@@ -208,24 +238,46 @@ class _FormatChip extends StatelessWidget {
   static const Color textDark = Color(0xFF0F3B3F);
 
   @override
+  State<_FormatChip> createState() => _FormatChipState();
+}
+
+class _FormatChipState extends State<_FormatChip> {
+  bool _hovering = false;
+
+  @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-        decoration: BoxDecoration(
-          color: selected ? teal : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: selected ? teal : const Color(0xFFDADADA)),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: selected ? Colors.white : textDark,
+    final selected = widget.selected;
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hovering = true),
+      onExit: (_) => setState(() => _hovering = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedScale(
+          scale: _hovering ? 1.08 : 1.0,
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOutCubic,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+            decoration: BoxDecoration(
+              color: selected
+                  ? _FormatChip.teal
+                  : (_hovering ? const Color(0xFFEFF9F8) : Colors.white),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: (selected || _hovering) ? _FormatChip.teal : const Color(0xFFDADADA)),
+              boxShadow: selected
+                  ? [BoxShadow(color: _FormatChip.teal.withValues(alpha: 0.35), blurRadius: 12, offset: const Offset(0, 4))]
+                  : const [],
+            ),
+            child: Text(
+              widget.label,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: selected ? Colors.white : _FormatChip.textDark,
+              ),
+            ),
           ),
         ),
       ),

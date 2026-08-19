@@ -1,16 +1,27 @@
+import '../widgets/general/auto_scroll_view.dart';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import '../widgets/general/content_container.dart';
+import 'package:go_router/go_router.dart';
 
 import '../widgets/general/block_container.dart';
 import '../widgets/general/demo_cta_banner.dart';
 import '../widgets/general/footer.dart';
 import '../widgets/general/hover_arrow_button.dart';
+import '../widgets/general/micro_animations.dart';
 import '../widgets/general/responsive.dart';
+import '../widgets/general/type_scale.dart';
 
 const _darkTeal = Color(0xFF0F3B3F);
 const _teal = Color(0xFF17A8A6);
 const _subtext = Color(0xFF616161);
+
+/// This page reads as a narrow, dense catalogue rather than a wide marketing
+/// layout, so every section shares this column instead of the site-wide
+/// default. One value keeps the hero, the category overview and all the
+/// category blocks on the same left edge.
+const double _pageMaxWidth = 900;
 
 class IntegratiesPage extends StatefulWidget {
   const IntegratiesPage({super.key});
@@ -23,10 +34,13 @@ class _IntegratiesPageState extends State<IntegratiesPage> {
   final _searchController = TextEditingController();
 
   static const List<_SystemData> _declaratieSystems = [
-    _SystemData(name: "VECOZO", backText: "Veilige declaraties naar zorgverzekeraars."),
+    _SystemData(
+        name: "VECOZO", backText: "Veilige declaraties naar zorgverzekeraars."),
     _SystemData(name: "Payt", backText: "Automatische facturatie en incasso."),
-    _SystemData(name: "Infomedics", backText: "Declaraties en facturatie voor de zorg."),
-    _SystemData(name: "Mollie", backText: "Snel en veilig betalingen ontvangen."),
+    _SystemData(name: "Infomedics",
+        backText: "Declaraties en facturatie voor de zorg."),
+    _SystemData(
+        name: "Mollie", backText: "Snel en veilig betalingen ontvangen."),
   ];
 
   static const List<_SystemData> _imagingSystems = [
@@ -40,36 +54,38 @@ class _IntegratiesPageState extends State<IntegratiesPage> {
       imagePath: "lib/assets/vq.jpg",
       backText: "Snelle toegang tot röntgenopnamen.",
     ),
-    _SystemData(name: "MediaDent", backText: "Beeldbeheer voor de tandartspraktijk."),
     _SystemData(
-      name: "Sidexis",
-      backText: "Digitale röntgenbeelden van Dentsply Sirona.",
-      synonyms: ["Dentsply", "Sirona"],
-    ),
-    _SystemData(name: "Onyxceph", backText: "3D-planning en analyse van gebitsscans."),
+        name: "MediaDent", backText: "Beeldbeheer voor de tandartspraktijk."),
   ];
 
   static const List<_SystemData> _communicatieSystems = [
-    _SystemData(name: "ZorgMail", backText: "Veilig medische informatie uitwisselen."),
-    _SystemData(name: "Zivver", backText: "Versleuteld en veilig e-mailverkeer."),
+    _SystemData(
+        name: "ZorgMail", backText: "Veilig medische informatie uitwisselen."),
+    _SystemData(
+        name: "Zivver", backText: "Versleuteld en veilig e-mailverkeer."),
   ];
 
   static const List<_SystemData> _tandtechniekSystems = [
-    _SystemData(name: "3Shape", backText: "Digitale afdrukken naar het tandtechnisch lab."),
-    _SystemData(name: "Medit", backText: "Nauwkeurige 3D-scans van het gebit."),
-    _SystemData(name: "QR-code workflows", backText: "Bestellingen automatisch herkennen en koppelen."),
+    _SystemData(name: "3Shape",
+        backText: "Digitale afdrukken naar het tandtechnisch lab."),
+    _SystemData(name: "QR-code workflows",
+        backText: "Bestellingen automatisch herkennen en koppelen."),
   ];
 
   static const List<_SystemData> _labelprinterSystems = [
-    _SystemData(name: "Dymo", backText: "Labels printen rechtstreeks vanuit het dossier."),
-    _SystemData(name: "Zebra", backText: "Professioneel labelen en barcodes printen."),
-    _SystemData(name: "QR code scanners", backText: "Snel en foutloos gegevens invoeren."),
-    _SystemData(name: "Brother", backText: "Betrouwbaar printen voor de dagelijkse praktijk."),
+    _SystemData(name: "Dymo",
+        backText: "Labels printen rechtstreeks vanuit het dossier."),
+    _SystemData(
+        name: "Zebra", backText: "Professioneel labelen en barcodes printen."),
+    _SystemData(name: "QR code scanners",
+        backText: "Snel en foutloos gegevens invoeren."),
+    _SystemData(name: "Brother",
+        backText: "Betrouwbaar printen voor de dagelijkse praktijk."),
   ];
 
   static const List<_SystemData> _telefonieSystems = [
-    _SystemData(name: "Yealink", backText: "IP-telefonie met directe patiëntherkenning."),
-    _SystemData(name: "WhatsApp Business", backText: "Communiceer via het kanaal dat patiënten al gebruiken."),
+    _SystemData(name: "Yealink",
+        backText: "IP-telefonie met directe patiëntherkenning."),
   ];
 
   @override
@@ -103,173 +119,161 @@ class _IntegratiesPageState extends State<IntegratiesPage> {
     }
   }
 
-  List<_CategorySection> get _allCategories => [
-    _CategorySection(
-      icon: Icons.credit_card_outlined,
-      title: "Declaraties & Betalingen",
-      summary: "Veilig declareren bij zorgverzekeraars en eenvoudig betalingen ontvangen.",
-      linkLabel: "Naar de koppelingen",
-      description:
+  List<_CategorySection> get _allCategories =>
+      [
+        _CategorySection(
+          icon: Icons.credit_card_outlined,
+          title: "Declaraties & Betalingen",
+          summary: "Veilig declareren bij zorgverzekeraars en eenvoudig betalingen ontvangen.",
+          linkLabel: "Naar de koppelingen",
+          description:
           "Verstuur declaraties rechtstreeks vanuit Odontium en laat betalingen en verwerking "
-          "aansluiten op uw bestaande werkwijze. Minder handmatig werk en een sneller "
-          "administratief proces.",
-      lightBackground: true,
-      systems: _declaratieSystems,
-      synonyms: const [
-        "declaratie",
-        "declareren",
-        "factuur",
-        "facturatie",
-        "betaling",
-        "betalen",
-        "incasso",
-        "zorgverzekeraar",
-        "verzekeraar",
-        "financieel",
-        "afrekenen",
-        "geld",
-      ],
-    ),
-    _CategorySection(
-      icon: Icons.image_outlined,
-      title: "Beeldvorming & Röntgen",
-      summary: "Open röntgenopnamen direct vanuit het patiëntdossier, zonder dubbel werk.",
-      linkLabel: "Bekijk koppelingen",
-      description:
+              "aansluiten op uw bestaande werkwijze. Minder handmatig werk en een sneller "
+              "administratief proces.",
+          lightBackground: true,
+          systems: _declaratieSystems,
+          synonyms: const [
+            "declaratie",
+            "declareren",
+            "factuur",
+            "facturatie",
+            "betaling",
+            "betalen",
+            "incasso",
+            "zorgverzekeraar",
+            "verzekeraar",
+            "financieel",
+            "afrekenen",
+            "geld",
+          ],
+        ),
+        _CategorySection(
+          icon: Icons.image_outlined,
+          title: "Beeldvorming & Röntgen",
+          summary: "Open röntgenopnamen direct vanuit het patiëntdossier, zonder dubbel werk.",
+          linkLabel: "Bekijk koppelingen",
+          description:
           "Open röntgenfoto's en andere beelden rechtstreeks vanuit het patiëntdossier. Zo "
-          "hoeft u niet te wisselen tussen verschillende programma's.",
-      lightBackground: false,
-      systems: _imagingSystems,
-      synonyms: const [
-        "rontgen",
-        "foto",
-        "fotos",
-        "beeld",
-        "beelden",
-        "scan",
-        "scannen",
-        "afbeelding",
-        "xray",
-        "opname",
-        "opnamen",
-        "gebitsfoto",
-      ],
-      trailing: _buildOverigePanel(
-        "Werkt u met een ander röntgensysteem? Wij denken graag mee.",
-        screenshot: Container(
-          width: 220,
-          height: 100,
-          decoration: BoxDecoration(color: const Color(0xFFDCDCDC), borderRadius: BorderRadius.circular(16)),
-          alignment: Alignment.center,
-          padding: const EdgeInsets.all(12),
-          child: const Text(
-            "Screenshot of the related page in the software",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 12, color: Colors.black54, fontWeight: FontWeight.w500),
+              "hoeft u niet te wisselen tussen verschillende programma's.",
+          lightBackground: false,
+          systems: _imagingSystems,
+          synonyms: const [
+            "rontgen",
+            "foto",
+            "fotos",
+            "beeld",
+            "beelden",
+            "scan",
+            "scannen",
+            "afbeelding",
+            "xray",
+            "opname",
+            "opnamen",
+            "gebitsfoto",
+          ],
+        ),
+        _CategorySection(
+          icon: Icons.mail_outline,
+          title: "Communicatie",
+          summary: "Versleutelde en snelle communicatie met patiënten en zorgverleners.",
+          linkLabel: "Bekijk koppelingen",
+          description:
+          "Verstuur berichten veilig en volgens de AVG. Alle communicatie blijft "
+              "overzichtelijk gekoppeld aan uw praktijk.",
+          lightBackground: true,
+          systems: _communicatieSystems,
+          synonyms: const [
+            "bericht",
+            "berichten",
+            "mail",
+            "email",
+            "e-mail",
+            "veilig mailen",
+            "uitwisselen",
+            "avg",
+            "correspondentie",
+          ],
+        ),
+        _CategorySection(
+          icon: Icons.document_scanner_outlined,
+          title: "Tandtechniek & Laboratoria",
+          summary: "Digitale afdrukken en CAD/CAM-workflows rechtstreeks naar het lab.",
+          linkLabel: "Bekijk koppelingen",
+          description:
+          "Werk eenvoudig samen met tandtechnische laboratoria en digitale scanners. "
+              "Bestellingen, afdrukken en bestanden worden direct uitgewisseld.",
+          lightBackground: false,
+          systems: _tandtechniekSystems,
+          synonyms: const [
+            "lab",
+            "laboratorium",
+            "tandtechniek",
+            "tandtechnisch",
+            "afdruk",
+            "afdrukken",
+            "scanner",
+            "intraoraal",
+            "gebit",
+            "cadcam",
+            "tandtechnicus",
+          ],
+        ),
+        _CategorySection(
+          icon: Icons.print_outlined,
+          title: "Labelprinters & Scanners",
+          summary: "Labels printen, barcodes scannen en batches automatisch herkennen.",
+          linkLabel: "Bekijk koppelingen",
+          description:
+          "Print labels of scan producten rechtstreeks vanuit Odontium. Zo bespaart u tijd "
+              "en voorkomt u invoerfouten.",
+          lightBackground: true,
+          systems: _labelprinterSystems,
+          synonyms: const [
+            "printer",
+            "printen",
+            "label",
+            "labels",
+            "barcode",
+            "streepjescode",
+            "scanner",
+            "scannen",
+            "hardware",
+            "apparatuur",
+          ],
+          trailing: const Padding(
+            padding: EdgeInsets.only(top: 16),
+            child: Text(
+                "en meer ...", style: TextStyle(fontSize: 13, color: _subtext)),
           ),
         ),
-      ),
-    ),
-    _CategorySection(
-      icon: Icons.mail_outline,
-      title: "Communicatie",
-      summary: "Versleutelde en snelle communicatie met patiënten en zorgverleners.",
-      linkLabel: "Bekijk koppelingen",
-      description:
-          "Verstuur berichten veilig en volgens de AVG. Alle communicatie blijft "
-          "overzichtelijk gekoppeld aan uw praktijk.",
-      lightBackground: true,
-      systems: _communicatieSystems,
-      synonyms: const [
-        "bericht",
-        "berichten",
-        "mail",
-        "email",
-        "e-mail",
-        "veilig mailen",
-        "uitwisselen",
-        "avg",
-        "correspondentie",
-      ],
-    ),
-    _CategorySection(
-      icon: Icons.document_scanner_outlined,
-      title: "Tandtechniek & Laboratoria",
-      summary: "Digitale afdrukken en CAD/CAM-workflows rechtstreeks naar het lab.",
-      linkLabel: "Bekijk koppelingen",
-      description:
-          "Werk eenvoudig samen met tandtechnische laboratoria en digitale scanners. "
-          "Bestellingen, afdrukken en bestanden worden direct uitgewisseld.",
-      lightBackground: false,
-      systems: _tandtechniekSystems,
-      synonyms: const [
-        "lab",
-        "laboratorium",
-        "tandtechniek",
-        "tandtechnisch",
-        "afdruk",
-        "afdrukken",
-        "scanner",
-        "intraoraal",
-        "gebit",
-        "cadcam",
-        "tandtechnicus",
-      ],
-    ),
-    _CategorySection(
-      icon: Icons.print_outlined,
-      title: "Labelprinters & Scanners",
-      summary: "Labels printen, barcodes scannen en batches automatisch herkennen.",
-      linkLabel: "Bekijk koppelingen",
-      description:
-          "Print labels of scan producten rechtstreeks vanuit Odontium. Zo bespaart u tijd "
-          "en voorkomt u invoerfouten.",
-      lightBackground: true,
-      systems: _labelprinterSystems,
-      synonyms: const [
-        "printer",
-        "printen",
-        "label",
-        "labels",
-        "barcode",
-        "streepjescode",
-        "scanner",
-        "scannen",
-        "hardware",
-        "apparatuur",
-      ],
-      trailing: const Padding(
-        padding: EdgeInsets.only(top: 16),
-        child: Text("en meer ...", style: TextStyle(fontSize: 13, color: _subtext)),
-      ),
-    ),
-    _CategorySection(
-      icon: Icons.phone_outlined,
-      title: "Telefonie, SMS, WhatsApp",
-      summary: "Directe patiëntherkenning bij binnenkomende gesprekken.",
-      linkLabel: "Bekijk koppelingen",
-      description:
+        _CategorySection(
+          icon: Icons.phone_outlined,
+          title: "Telefonie, SMS, WhatsApp",
+          summary: "Directe patiëntherkenning bij binnenkomende gesprekken.",
+          linkLabel: "Bekijk koppelingen",
+          description:
           "Communiceer met patiënten via de kanalen die zij al gebruiken. Zo blijft "
-          "contact snel, persoonlijk en overzichtelijk.",
-      lightBackground: false,
-      systems: _telefonieSystems,
-      synonyms: const [
-        "telefoon",
-        "telefonie",
-        "bellen",
-        "gesprek",
-        "gesprekken",
-        "sms",
-        "bericht",
-        "berichten",
-        "whatsapp",
-        "chat",
-        "ip-telefonie",
-        "voip",
-      ],
-      trailing: _buildOverigePanel("Werkt u met een ander systeem? Wij denken graag mee."),
-    ),
-  ];
+              "contact snel, persoonlijk en overzichtelijk.",
+          lightBackground: false,
+          systems: _telefonieSystems,
+          synonyms: const [
+            "telefoon",
+            "telefonie",
+            "bellen",
+            "gesprek",
+            "gesprekken",
+            "sms",
+            "bericht",
+            "berichten",
+            "whatsapp",
+            "chat",
+            "ip-telefonie",
+            "voip",
+          ],
+          trailing: _buildOverigePanel(
+              "Werkt u met een ander systeem? Wij denken graag mee."),
+        ),
+      ];
 
   Widget _buildOverigePanel(String question, {Widget? screenshot}) {
     final textColumn = Column(
@@ -278,17 +282,21 @@ class _IntegratiesPageState extends State<IntegratiesPage> {
       children: [
         const Text(
           "Overige systemen?",
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: _darkTeal),
+          style: TextStyle(
+              fontSize: 15, fontWeight: FontWeight.bold, color: _darkTeal),
         ),
         const SizedBox(height: 6),
-        Text(question, style: const TextStyle(fontSize: 13, color: _subtext, height: 1.4)),
+        Text(question,
+            style: const TextStyle(fontSize: 13, color: _subtext, height: 1.4)),
         const SizedBox(height: 12),
-        HoverArrowButton(label: "Neem contact met ons op", onPressed: () {}),
+        HoverArrowButton(label: "Neem contact met ons op",
+            onPressed: () => context.go('/contact')),
       ],
     );
 
     if (screenshot == null) {
-      return Padding(padding: const EdgeInsets.only(top: 16), child: textColumn);
+      return Padding(
+          padding: const EdgeInsets.only(top: 16), child: textColumn);
     }
 
     // HoverArrowButton has a 200px minWidth floor, so on mobile the
@@ -326,25 +334,26 @@ class _IntegratiesPageState extends State<IntegratiesPage> {
     if (query.isEmpty) return _allCategories;
     return _allCategories
         .map((c) {
-          final categoryMatches =
-              _matches(c.title, query) || c.synonyms.any((s) => _matches(s, query));
-          final systems = categoryMatches
-              ? c.systems
-              : c.systems
-                  .where((s) => _matches(s.name, query) || s.synonyms.any((s2) => _matches(s2, query)))
-                  .toList();
-          return _CategorySection(
-            icon: c.icon,
-            title: c.title,
-            summary: c.summary,
-            linkLabel: c.linkLabel,
-            description: c.description,
-            lightBackground: c.lightBackground,
-            systems: systems,
-            synonyms: c.synonyms,
-            trailing: c.trailing,
-          );
-        })
+      final categoryMatches =
+          _matches(c.title, query) || c.synonyms.any((s) => _matches(s, query));
+      final systems = categoryMatches
+          ? c.systems
+          : c.systems
+          .where((s) =>
+      _matches(s.name, query) || s.synonyms.any((s2) => _matches(s2, query)))
+          .toList();
+      return _CategorySection(
+        icon: c.icon,
+        title: c.title,
+        summary: c.summary,
+        linkLabel: c.linkLabel,
+        description: c.description,
+        lightBackground: c.lightBackground,
+        systems: systems,
+        synonyms: c.synonyms,
+        trailing: c.trailing,
+      );
+    })
         .where((c) => c.systems.isNotEmpty)
         .toList();
   }
@@ -405,13 +414,15 @@ class _IntegratiesPageState extends State<IntegratiesPage> {
   Widget _buildHeroText({required bool mobile}) {
     final align = mobile ? TextAlign.center : TextAlign.start;
     return Column(
-      crossAxisAlignment: mobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+      crossAxisAlignment: mobile
+          ? CrossAxisAlignment.center
+          : CrossAxisAlignment.start,
       children: [
         Text(
           "Integraties die met uw\npraktijk meewerken",
           textAlign: align,
           style: TextStyle(
-            fontSize: mobile ? 26 : 32,
+            fontSize: AppFont.h1(context),
             fontWeight: FontWeight.bold,
             color: _darkTeal,
             height: 1.25,
@@ -422,19 +433,20 @@ class _IntegratiesPageState extends State<IntegratiesPage> {
           constraints: const BoxConstraints(maxWidth: 420),
           child: Text(
             "Odontium sluit naadloos aan op de systemen en apparatuur die u dagelijks "
-            "gebruikt. Zo werkt alles samen in één efficiënte workflow.",
+                "gebruikt. Zo werkt alles samen in één efficiënte workflow.",
             textAlign: align,
             style: const TextStyle(fontSize: 14, color: _subtext, height: 1.5),
           ),
         ),
         const SizedBox(height: 20),
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () => context.go('/contact'),
           style: ElevatedButton.styleFrom(
             backgroundColor: _teal,
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20)),
             elevation: 0,
           ),
           child: const Text(
@@ -448,49 +460,62 @@ class _IntegratiesPageState extends State<IntegratiesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final scrollController = ScrollController();
+    late FocusNode _focusNode = FocusNode();
+    _focusNode.addListener(() {
+      setState(() {
+        if (_focusNode.hasFocus == true) {
+          scrollController.animateTo(
+            900, duration: const Duration(milliseconds: 400),
+            curve: Curves.easeInOut);
+        }
+      });
+    });
+
     final query = _searchController.text.trim().toLowerCase();
     final visibleCategories = _filteredCategories(query);
 
     return Scaffold(
-      body: SingleChildScrollView(
+      body: AutoScrollView(
+        controller: scrollController,
         child: Column(
           children: [
             const SizedBox(height: 56),
             BlockContainer(
               screenWidthFactor: 1,
               child: Center(
-                child: ConstrainedBox(
-                  // Caps the hero at a sane width on 4K instead of the old
-                  // default 0.5 factor stretching it to ~1400px with a huge
-                  // gap between the text and the illustration.
-                  constraints: const BoxConstraints(maxWidth: 1100),
+                child: ContentContainer(
+                  maxWidth: _pageMaxWidth,
                   child: isMobile(context)
                       ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            _buildHeroText(mobile: true),
-                            const SizedBox(height: 32),
-                            const _IntegrationHubIllustration(),
-                          ],
-                        )
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      _buildHeroText(mobile: true),
+                      const SizedBox(height: 32),
+                      const _IntegrationHubIllustration(),
+                    ],
+                  )
                       : Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(child: _buildHeroText(mobile: false)),
-                            const SizedBox(width: 32),
-                            const _IntegrationHubIllustration(),
-                          ],
-                        ),
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(child: _buildHeroText(mobile: false)),
+                      const SizedBox(width: 32),
+                      const _IntegrationHubIllustration(),
+                    ],
+                  ),
                 ),
               ),
             ),
             BlockContainer(
               screenWidthFactor: 1,
               child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 900),
+                // At 900 three 280px cards fit per row, so the six categories
+                // form a tidy 3x2 grid.
+                child: ContentContainer(
+                  maxWidth: _pageMaxWidth,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
                         "Integratie categorieën",
@@ -506,42 +531,11 @@ class _IntegratiesPageState extends State<IntegratiesPage> {
                         constraints: const BoxConstraints(maxWidth: 560),
                         child: const Text(
                           "Zes gebieden waarin Odontium met uw bestaande systemen samenwerkt. Klik op een "
-                          "kaart voor de details.",
+                              "kaart voor de details.",
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 14, color: _subtext, height: 1.5),
-                        ),
-                      ),
-                      const SizedBox(height: 28),
-                      const Text(
-                        "Zoek op naam, of blader hieronder per categorie.",
-                        style: TextStyle(fontSize: 12, color: _subtext),
-                      ),
-                      const SizedBox(height: 10),
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 420),
-                        child: TextField(
-                          controller: _searchController,
-                          style: const TextStyle(fontSize: 13, color: _darkTeal),
-                          decoration: InputDecoration(
-                            hintText: "Zoek uw systeem, bijv. VisiQuick",
-                            hintStyle: const TextStyle(fontSize: 13, color: _subtext),
-                            suffixIcon: const Icon(Icons.search, color: _subtext, size: 20),
-                            filled: true,
-                            fillColor: Colors.white,
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(24),
-                              borderSide: const BorderSide(color: Color(0xFFDADADA)),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(24),
-                              borderSide: const BorderSide(color: Color(0xFFDADADA)),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(24),
-                              borderSide: const BorderSide(color: _teal, width: 1.5),
-                            ),
-                          ),
+                          style: TextStyle(fontSize: 14,
+                              color: _subtext,
+                              height: 1.5),
                         ),
                       ),
                       const SizedBox(height: 40),
@@ -549,26 +543,73 @@ class _IntegratiesPageState extends State<IntegratiesPage> {
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 24),
                           child: Text(
-                            "Geen resultaten gevonden voor \"${_searchController.text.trim()}\".",
-                            style: const TextStyle(fontSize: 14, color: _subtext),
+                            "Geen resultaten gevonden voor \"${_searchController
+                                .text.trim()}\".",
+                            style: const TextStyle(
+                                fontSize: 14, color: _subtext),
                           ),
                         )
                       else
                         Wrap(
+                          // Centred so a partial last row (or a filtered
+                          // result set) stays balanced under the heading.
+                          alignment: WrapAlignment.center,
                           spacing: 24,
                           runSpacing: 24,
                           children: [
-                            for (final category in visibleCategories)
+                            for (final category in _allCategories)
                               SizedBox(
                                 width: 280,
                                 child: _CategoryCard(
                                   data: category,
-                                  onTap: () => _scrollToCategory(category.title),
+                                  onTap: () =>
+                                      _scrollToCategory(category.title),
                                 ),
                               ),
                           ],
                         ),
                       const SizedBox(height: 40),
+                      const Text(
+                        "Zoek op naam, of blader hieronder per categorie.",
+                        style: TextStyle(fontSize: 12, color: _subtext),
+                      ),
+                      SizedBox(height: 22),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 420),
+                        child: TextField(
+                          focusNode: _focusNode,
+                          controller: _searchController,
+                          style: const TextStyle(fontSize: 13,
+                              color: _darkTeal),
+                          decoration: InputDecoration(
+                            hintText: "Zoek uw systeem, bijv. VisiQuick",
+                            hintStyle: const TextStyle(
+                                fontSize: 13, color: _subtext),
+                            suffixIcon: const Icon(
+                                Icons.search, color: _subtext, size: 20),
+                            filled: true,
+                            fillColor: Colors.white,
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 18, vertical: 12),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(24),
+                              borderSide: const BorderSide(
+                                  color: Color(0xFFDADADA)),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(24),
+                              borderSide: const BorderSide(
+                                  color: Color(0xFFDADADA)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(24),
+                              borderSide: const BorderSide(
+                                  color: _teal, width: 1.5),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 32),
                       const Divider(color: Color(0xFFE0E0E0)),
                     ],
                   ),
@@ -582,33 +623,39 @@ class _IntegratiesPageState extends State<IntegratiesPage> {
                     ? const Color.fromRGBO(226, 238, 245, 1)
                     : const Color(0xFFF8F9FB),
                 screenWidthFactor: 1,
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 900),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          category.title,
-                          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: _darkTeal),
+                child: ContentContainer(
+                  maxWidth: _pageMaxWidth,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        category.title,
+                        style: TextStyle(fontSize: AppFont.h2(context),
+                            fontWeight: FontWeight.bold,
+                            color: _darkTeal),
+                      ),
+                      const SizedBox(height: 10),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 560),
+                        child: Text(
+                          category.description,
+                          style: const TextStyle(
+                              fontSize: 14, color: _subtext, height: 1.5),
                         ),
-                        const SizedBox(height: 10),
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 560),
-                          child: Text(
-                            category.description,
-                            style: const TextStyle(fontSize: 14, color: _subtext, height: 1.5),
-                          ),
-                        ),
-                        const SizedBox(height: 28),
-                        Wrap(
-                          spacing: 16,
-                          runSpacing: 16,
-                          children: [for (final system in category.systems) _FlipCard(data: system)],
-                        ),
-                        if (category.trailing != null) category.trailing!,
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 28),
+                      Wrap(
+                        alignment: WrapAlignment.start,
+                        spacing: 16,
+                        runSpacing: 16,
+                        children: [
+                          for (final system in category.systems) _FlipCard(
+                              data: system)
+                        ],
+                      ),
+                      if (category.trailing != null) category.trailing!,
+                    ],
                   ),
                 ),
               ),
@@ -652,9 +699,14 @@ class _CategoryCardState extends State<_CategoryCard> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: _hovering ? _teal : const Color(0xFFDADADA)),
+            border: Border.all(
+                color: _hovering ? _teal : const Color(0xFFDADADA)),
             boxShadow: _hovering
-                ? [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 16, offset: const Offset(0, 6))]
+                ? [
+              BoxShadow(color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6))
+            ]
                 : const [],
           ),
           child: Column(
@@ -673,12 +725,15 @@ class _CategoryCardState extends State<_CategoryCard> {
               const SizedBox(height: 14),
               Text(
                 widget.data.title,
-                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: _darkTeal),
+                style: const TextStyle(fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: _darkTeal),
               ),
               const SizedBox(height: 8),
               Text(
                 widget.data.summary,
-                style: const TextStyle(fontSize: 13, color: _subtext, height: 1.4),
+                style: const TextStyle(
+                    fontSize: 13, color: _subtext, height: 1.4),
               ),
               const SizedBox(height: 14),
               Row(
@@ -686,13 +741,16 @@ class _CategoryCardState extends State<_CategoryCard> {
                 children: [
                   Text(
                     widget.data.linkLabel,
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: _teal),
+                    style: const TextStyle(fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: _teal),
                   ),
                   const SizedBox(width: 6),
                   AnimatedSlide(
                     duration: const Duration(milliseconds: 200),
                     offset: _hovering ? const Offset(0.3, 0) : Offset.zero,
-                    child: const Icon(Icons.arrow_forward, size: 14, color: _teal),
+                    child: const Icon(
+                        Icons.arrow_forward, size: 14, color: _teal),
                   ),
                 ],
               ),
@@ -751,7 +809,8 @@ class _FlipCard extends StatefulWidget {
   State<_FlipCard> createState() => _FlipCardState();
 }
 
-class _FlipCardState extends State<_FlipCard> with SingleTickerProviderStateMixin {
+class _FlipCardState extends State<_FlipCard>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 400),
@@ -784,9 +843,12 @@ class _FlipCardState extends State<_FlipCard> with SingleTickerProviderStateMixi
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: _toggleFlip,
+        // The box is a fixed size while the text inside follows the fluid type
+        // scale, so it grows by the same factor — otherwise the back-of-card
+        // description would overflow on 4K.
         child: SizedBox(
-          width: 205,
-          height: 108,
+          width: 205 * typeScaleOf(context),
+          height: 108 * typeScaleOf(context),
           child: AnimatedBuilder(
             animation: _controller,
             builder: (context, _) {
@@ -819,22 +881,27 @@ class _FlipCardState extends State<_FlipCard> with SingleTickerProviderStateMixi
       child: widget.data.imagePath != null
           ? Image.asset(widget.data.imagePath!, fit: BoxFit.contain)
           : Text(
-              widget.data.name,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _darkTeal),
-            ),
+        widget.data.name,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+            fontSize: 14, fontWeight: FontWeight.w600, color: _darkTeal),
+      ),
     );
   }
 
   Widget _buildBack() {
     return Container(
-      decoration: BoxDecoration(color: _teal, borderRadius: BorderRadius.circular(14)),
+      decoration: BoxDecoration(
+          color: _teal, borderRadius: BorderRadius.circular(14)),
       alignment: Alignment.center,
       padding: const EdgeInsets.all(16),
       child: Text(
         widget.data.backText,
         textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white, height: 1.3),
+        style: const TextStyle(fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+            height: 1.3),
       ),
     );
   }
@@ -895,7 +962,9 @@ class _IntegrationHubIllustration extends StatelessWidget {
                     child: const Text(
                       "Odontium",
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11),
+                      style: TextStyle(color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 11),
                     ),
                   ),
                 ),
@@ -906,18 +975,24 @@ class _IntegrationHubIllustration extends StatelessWidget {
             Positioned(
               left: _iconPoints[i].dx - 18,
               top: _iconPoints[i].dy - 18,
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: _teal.withValues(alpha: 0.4)),
-                  boxShadow: [
-                    BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 6, offset: const Offset(0, 2)),
-                  ],
+              child: Floating(
+                amplitude: 4,
+                phase: i / _iconPoints.length,
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: _teal.withValues(alpha: 0.4)),
+                    boxShadow: [
+                      BoxShadow(color: Colors.black.withValues(alpha: 0.06),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2)),
+                    ],
+                  ),
+                  child: Icon(_icons[i], size: 17, color: _teal),
                 ),
-                child: Icon(_icons[i], size: 17, color: _teal),
               ),
             ),
         ],
@@ -948,7 +1023,8 @@ class _HubLinesPainter extends CustomPainter {
       var drawn = 0.0;
       while (drawn < totalLength) {
         final segmentEnd = math.min(drawn + dashLength, totalLength);
-        canvas.drawLine(center + direction * drawn, center + direction * segmentEnd, paint);
+        canvas.drawLine(
+            center + direction * drawn, center + direction * segmentEnd, paint);
         drawn += dashLength + gapLength;
       }
     }

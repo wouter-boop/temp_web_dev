@@ -73,6 +73,7 @@ class _FAQTile extends StatefulWidget {
 class _FAQTileState extends State<_FAQTile>
     with SingleTickerProviderStateMixin {
   bool expanded = false;
+  bool _hovering = false;
 
   @override
   Widget build(BuildContext context) {
@@ -80,16 +81,29 @@ class _FAQTileState extends State<_FAQTile>
       children: [
         InkWell(
           onTap: () => setState(() => expanded = !expanded),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 22),
+          onHover: (hovering) => setState(() => _hovering = hovering),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOutCubic,
+            decoration: BoxDecoration(
+              color: _hovering ? const Color(0xFF17A8A6).withValues(alpha: 0.06) : Colors.transparent,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            padding: EdgeInsets.only(
+              top: 22,
+              bottom: 22,
+              right: 8,
+              left: _hovering ? 14 : 4,
+            ),
             child: Row(
               children: [
                 Expanded(
                   child: Text(
                     widget.item.question,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
-                      color: Color(0xFF222222),
+                      fontWeight: _hovering ? FontWeight.w600 : FontWeight.w400,
+                      color: _hovering ? const Color(0xFF0F3B3F) : const Color(0xFF222222),
                     ),
                   ),
                 ),
