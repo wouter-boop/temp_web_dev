@@ -2,6 +2,7 @@ import '../widgets/general/auto_scroll_view.dart';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../widgets/general/content_container.dart';
 import 'package:go_router/go_router.dart';
 
@@ -34,13 +35,14 @@ class _IntegratiesPageState extends State<IntegratiesPage> {
   final _searchController = TextEditingController();
 
   static const List<_SystemData> _declaratieSystems = [
-    _SystemData(
-        name: "VECOZO", backText: "Veilige declaraties naar zorgverzekeraars."),
-    _SystemData(name: "Payt", backText: "Automatische facturatie en incasso."),
-    _SystemData(name: "Infomedics",
+    _SystemData(name: "VECOZO", imagePath: "lib/assets/logo_vecozo.svg",
+        backText: "Veilige declaraties naar zorgverzekeraars."),
+    _SystemData(name: "Payt", imagePath: "lib/assets/logo_payt.svg",
+        backText: "Automatische facturatie en incasso."),
+    _SystemData(name: "Infomedics", imagePath: "lib/assets/logo_infomedics.svg",
         backText: "Declaraties en facturatie voor de zorg."),
-    _SystemData(
-        name: "Mollie", backText: "Snel en veilig betalingen ontvangen."),
+    _SystemData(name: "Mollie", imagePath: "lib/assets/logo_mollie.svg",
+        backText: "Snel en veilig betalingen ontvangen."),
   ];
 
   static const List<_SystemData> _imagingSystems = [
@@ -59,32 +61,32 @@ class _IntegratiesPageState extends State<IntegratiesPage> {
   ];
 
   static const List<_SystemData> _communicatieSystems = [
-    _SystemData(
-        name: "ZorgMail", backText: "Veilig medische informatie uitwisselen."),
-    _SystemData(
-        name: "Zivver", backText: "Versleuteld en veilig e-mailverkeer."),
+    _SystemData(name: "ZorgMail", imagePath: "lib/assets/logo_zorgmail.svg",
+        backText: "Veilig medische informatie uitwisselen."),
+    _SystemData(name: "Zivver", imagePath: "lib/assets/logo_zivver.png",
+        backText: "Versleuteld en veilig e-mailverkeer."),
   ];
 
   static const List<_SystemData> _tandtechniekSystems = [
-    _SystemData(name: "3Shape",
+    _SystemData(name: "3Shape", imagePath: "lib/assets/logo_3shape.svg",
         backText: "Digitale afdrukken naar het tandtechnisch lab."),
     _SystemData(name: "QR-code workflows",
         backText: "Bestellingen automatisch herkennen en koppelen."),
   ];
 
   static const List<_SystemData> _labelprinterSystems = [
-    _SystemData(name: "Dymo",
+    _SystemData(name: "Dymo", imagePath: "lib/assets/logo_dymo.svg",
         backText: "Labels printen rechtstreeks vanuit het dossier."),
     _SystemData(
         name: "Zebra", backText: "Professioneel labelen en barcodes printen."),
     _SystemData(name: "QR code scanners",
         backText: "Snel en foutloos gegevens invoeren."),
-    _SystemData(name: "Brother",
+    _SystemData(name: "Brother", imagePath: "lib/assets/logo_brother.svg",
         backText: "Betrouwbaar printen voor de dagelijkse praktijk."),
   ];
 
   static const List<_SystemData> _telefonieSystems = [
-    _SystemData(name: "Yealink",
+    _SystemData(name: "Yealink", imagePath: "lib/assets/logo_yealink.png",
         backText: "IP-telefonie met directe patiëntherkenning."),
   ];
 
@@ -125,7 +127,7 @@ class _IntegratiesPageState extends State<IntegratiesPage> {
           icon: Icons.credit_card_outlined,
           title: "Declaraties & Betalingen",
           summary: "Veilig declareren bij zorgverzekeraars en eenvoudig betalingen ontvangen.",
-          linkLabel: "Naar de koppelingen",
+          linkLabel: "Bekijk koppelingen",
           description:
           "Verstuur declaraties rechtstreeks vanuit Odontium en laat betalingen en verwerking "
               "aansluiten op uw bestaande werkwijze. Minder handmatig werk en een sneller "
@@ -240,15 +242,10 @@ class _IntegratiesPageState extends State<IntegratiesPage> {
             "hardware",
             "apparatuur",
           ],
-          trailing: const Padding(
-            padding: EdgeInsets.only(top: 16),
-            child: Text(
-                "en meer ...", style: TextStyle(fontSize: 13, color: _subtext)),
-          ),
         ),
         _CategorySection(
           icon: Icons.phone_outlined,
-          title: "Telefonie, SMS, WhatsApp",
+          title: "Telefonie & SMS",
           summary: "Directe patiëntherkenning bij binnenkomende gesprekken.",
           linkLabel: "Bekijk koppelingen",
           description:
@@ -265,7 +262,6 @@ class _IntegratiesPageState extends State<IntegratiesPage> {
             "sms",
             "bericht",
             "berichten",
-            "whatsapp",
             "chat",
             "ip-telefonie",
             "voip",
@@ -878,14 +874,20 @@ class _FlipCardState extends State<_FlipCard>
       ),
       alignment: Alignment.center,
       padding: const EdgeInsets.all(16),
-      child: widget.data.imagePath != null
-          ? Image.asset(widget.data.imagePath!, fit: BoxFit.contain)
-          : Text(
-        widget.data.name,
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-            fontSize: 14, fontWeight: FontWeight.w600, color: _darkTeal),
-      ),
+      // Logos are supplied as SVG where the vendor publishes one (crisper, and
+      // it stays sharp when the type scale grows on 4K) and PNG otherwise, so
+      // the extension picks the renderer. Systems with no logo yet fall back to
+      // their name as text.
+      child: widget.data.imagePath == null
+          ? Text(
+              widget.data.name,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                  fontSize: 14, fontWeight: FontWeight.w600, color: _darkTeal),
+            )
+          : widget.data.imagePath!.toLowerCase().endsWith('.svg')
+              ? SvgPicture.asset(widget.data.imagePath!, fit: BoxFit.contain)
+              : Image.asset(widget.data.imagePath!, fit: BoxFit.contain),
     );
   }
 

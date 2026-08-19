@@ -194,7 +194,7 @@ class _QuickLinks extends StatelessWidget {
         SizedBox(height: 18),
 
         _FooterLink(text: "Home", route: '/home'),
-        _FooterLink(text: "Product", route: '/Odontium'),
+        _FooterLink(text: "Odontium", route: '/Odontium'),
         _FooterLink(text: "Disciplines", route: '/disciplines'),
         _FooterLink(text: "Overstappen", route: '/overstappen'),
         _FooterLink(text: "Over Ons", route: '/over_ons'),
